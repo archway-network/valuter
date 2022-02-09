@@ -1,0 +1,111 @@
+{
+    "grpc":{
+        "server":"grpc.cosmos.network:443",
+        "tls": true,
+        "api_call_retry": 20,
+        "call_timeout": 30
+    },
+    
+    "subscriber_name":"cosmologger",
+
+    "block_explorer": {
+        "tx_hash":"https://www.mintscan.io/cosmos/txs/%s",
+        "account":"https://www.mintscan.io/cosmos/account/%s",
+        "validator":"https://www.mintscan.io/cosmos/validators/%s",
+        "COMMENTED_tx_hash":"https://explorer.constantine-1.archway.tech/transactions/%s"
+    },
+
+    "id_verification":{
+        "required": false,
+        "html_report": true,
+        "input_file":{
+            "path":"./input/us-500.csv",
+            "fields":{
+                "email": "email",
+                "kyc_id": "phone1"
+            }
+        },
+        "verifier_account": "cosmos1gjtvly9lel6zskvwtvlg5vhwpu9c9wawmyjhz4"
+    },
+    
+    "tasks":{
+        "gov": {
+            "max_winners" : 10,
+            "proposals": [59,60,61],
+            "reward": 480          
+        },
+        "validator_genesis": {
+            "max_winners" : 10,
+            "reward": 480,
+            "condition": {
+                "join_hight": 0,
+                "sign_percent": 99
+            }
+        },
+        "validator_join": {
+            "max_winners" : 10,
+            "reward": 720,
+            "condition": {
+                "join_hight": 1000,
+                "sign_percent": 99
+            }
+        },
+       
+        "jail_unjail": {
+            "max_winners" : 10,
+            "reward": 720
+        },
+        "staking": {
+            "max_winners" : 10,
+            "reward": 480
+        },
+        "uptime": {
+            "max_winners" : 10,
+            "reward": 480,
+            "conditions": [{
+                "start_hight": 100,
+                "end_hight": 200,
+                "uptime_percent": 80
+            }]
+        }
+    },
+
+    "bech32_prefix" : {
+        "account" :{
+            "address": "archway",
+            "pubkey": "archway"
+        },
+        "validator" :{
+            "address": "archwayvaloper",
+            "pubkey": "archwayvaloperpub"
+        },
+        "consensus" :{
+            "address": "archwayvalcons",
+            "pubkey": "archwayvalconspub"
+        }
+    },
+
+    "XX_bech32_prefix" : {
+        "account" :{
+            "address": "cosmos",
+            "pubkey": "cosmospub"
+        },
+        "validator" :{
+            "address": "cosmosvaloper",
+            "pubkey": "cosmosvaloperpub"
+        },
+        "consensus" :{
+            "address": "cosmosvalcons",
+            "pubkey": "cosmosvalconspub"
+        }
+    },
+
+    "report":{
+        "output_dir": "./output"
+    },
+
+    "api":{
+        "rows_per_page" : 200
+    }
+
+}
