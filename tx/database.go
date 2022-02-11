@@ -9,10 +9,20 @@ import (
 
 func DBRowToTxRecord(row database.RowType) types.TxRecord {
 
+	if row == nil {
+		return types.TxRecord{}
+	}
+
+	for i := range row {
+		if row[i] == nil {
+			row[i] = ""
+		}
+	}
+
 	return types.TxRecord{
 
 		TxHash:      string(row[database.FIELD_TX_EVENTS_TX_HASH].([]uint8)),
-		Height:      row[database.FIELD_TX_EVENTS_HEIGHT].(uint64),
+		Height:      uint64(row[database.FIELD_TX_EVENTS_HEIGHT].(int64)),
 		Module:      row[database.FIELD_TX_EVENTS_MODULE].(string),
 		Sender:      row[database.FIELD_TX_EVENTS_SENDER].(string),
 		Receiver:    row[database.FIELD_TX_EVENTS_RECEIVER].(string),

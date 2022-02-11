@@ -2,6 +2,7 @@ package tools
 
 import (
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -34,6 +35,17 @@ func GetLimitOffsetFromHttpReq(req *http.Request) types.DBLimitOffset {
 		Limit:  configs.Configs.API.RowsPerPage,
 		Offset: offset,
 		Page:   uint64(page),
+	}
+}
+
+/*------------------------------*/
+
+func GetPagination(totalRows, pageNumber uint64) types.Pagination {
+	totalPages := uint64(math.Ceil(float64(totalRows) / float64(configs.Configs.API.RowsPerPage)))
+	return types.Pagination{
+		CurrentPage: pageNumber,
+		TotalPages:  totalPages,
+		TotalRows:   totalRows,
 	}
 }
 

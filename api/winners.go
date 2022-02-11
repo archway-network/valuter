@@ -1,8 +1,11 @@
 package api
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/archway-network/valuter/tasks"
+	"github.com/archway-network/valuter/tools"
 	routing "github.com/julienschmidt/httprouter"
 )
 
@@ -13,72 +16,31 @@ import (
  */
 func GetWinners(resp http.ResponseWriter, req *http.Request, params routing.Params) {
 
-	// limitOffset := tools.GetLimitOffset(req)
+	winnersList, err := tasks.GetAllWinners()
 
-	/*------*/
+	if err != nil {
+		log.Printf("Error in db query: %v", err)
+		http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	// totalRows := int64(0)
-	// {
-	// 	SQL := `SELECT COUNT(*) AS "total" FROM "scooters"`
-	// 	rows, err := global.DB.Query(SQL, database.QueryParams{})
-	// 	if err != nil {
-	// 		log.Printf("Error in db query: %v", err)
-	// 		http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
-	// 		return
-	// 	}
-	// 	totalRows = rows[0]["total"].(int64)
-	// }
-
-	// totalPages := int64(math.Ceil(float64(totalRows) / float64(global.RowsPerPage)))
-	// pagination := map[string]interface{}{
-	// 	"current_page":  limitOffset.Page,
-	// 	"total_pages":   totalPages,
-	// 	"total_entries": totalRows,
-	// }
-
-	// /*------*/
-
-	// SQL := `SELECT *
-	// 		FROM
-	// 			"scooters"
-	// 		LIMIT $1 OFFSET $2`
-
-	// rows, err := global.DB.Query(SQL, database.QueryParams{limitOffset.Limit, limitOffset.Offset})
-	// if err != nil {
-	// 	log.Printf("Error in db query: %v", err)
-	// 	http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// tools.SendJSON(resp, map[string]interface{}{"pagination": pagination, "rows": rows})
+	tools.SendJSON(resp, winnersList.GetItems())
 }
 
 /*-------------*/
-
 /*
-* This function implements GET /winners/:uuid
+* This function implements GET /winners/:address
  */
 func GetWinner(resp http.ResponseWriter, req *http.Request, params routing.Params) {
 
-	// addr := params.ByName("addr")
+	address := params.ByName("address")
+	winnerResults, err := tasks.GetWinnerByAddress(address)
 
-	// /*------*/
+	if err != nil {
+		log.Printf("Error in db query: %v", err)
+		http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	// SQL := `SELECT * FROM "scooters" WHERE "uuid" = $1`
-
-	// rows, err := global.DB.Query(SQL, database.QueryParams{uuid})
-	// if err != nil {
-	// 	log.Printf("Error in db query: %v", err)
-	// 	http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// if rows == nil || len(rows) == 0 {
-	// 	http.Error(resp, "Scooter not found!", http.StatusNotFound)
-	// 	return
-	// }
-
-	// tools.SendJSON(resp, rows[0])
+	tools.SendJSON(resp, winnerResults)
 }
-
-/*-------------*/

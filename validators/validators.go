@@ -2,11 +2,10 @@ package validators
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/archway-network/valuter/blocks"
-	"github.com/archway-network/valuter/configs"
 	"github.com/archway-network/valuter/database"
+	"github.com/archway-network/valuter/tools"
 	"github.com/archway-network/valuter/tx"
 	"github.com/archway-network/valuter/types"
 )
@@ -83,6 +82,31 @@ func (v *ValidatorRecord) GetValidatorInfo() (ValidatorInfo, error) {
 
 }
 
+func (v *ValidatorRecord) GetValidatorInfoByBlockHeightRange(beginHeight, endHeight uint64) (ValidatorInfo, error) {
+	var vInfo ValidatorInfo
+	var err error
+
+	vInfo.ConsAddr = v.ConsAddr
+	vInfo.OprAddr = v.OprAddr
+
+	vInfo.FirstSignedBlockHeight, err = v.GetFirstSignedBlockHeightWithBegin(beginHeight)
+	if err != nil {
+		return vInfo, err
+	}
+
+	vInfo.TotalSignedBlocks, err = v.GetTotalSignedBlocksWithHeightRange(beginHeight, endHeight)
+	if err != nil {
+		return vInfo, err
+	}
+
+	// Calculating uptime
+	totalBlocks := endHeight - beginHeight
+	vInfo.UpTime = float32(vInfo.TotalSignedBlocks) / float32(totalBlocks)
+
+	return vInfo, nil
+
+}
+
 func GetValidatorsWithPagination(limitOffset types.DBLimitOffset) ([]ValidatorRecord, types.Pagination, error) {
 
 	// Prepare pagination
@@ -97,13 +121,7 @@ func GetValidatorsWithPagination(limitOffset types.DBLimitOffset) ([]ValidatorRe
 		}
 		totalRows = uint64(rows[0]["total"].(int64))
 	}
-
-	totalPages := uint64(math.Ceil(float64(totalRows) / float64(configs.Configs.API.RowsPerPage)))
-	pagination := types.Pagination{
-		CurrentPage: limitOffset.Page,
-		TotalPages:  totalPages,
-		TotalRows:   totalRows,
-	}
+	pagination := tools.GetPagination(totalRows, limitOffset.Page)
 
 	/*------*/
 
@@ -159,4 +177,37 @@ func GetUnjailedValidators() ([]ValidatorWithTx, error) {
 	}
 
 	return DBRowToValidatorWithTxs(rows), err
+}
+
+func GetJoinedAfterGenesisValidators() ([]ValidatorRecord, error) {
+
+	var validatorsList []ValidatorRecord
+
+	txs, err := tx.GetAllTxsByAction(tx.ACTION_CREATE_VALIDATOR)
+	if err != nil {
+		return validatorsList, err
+	}
+	for i := range txs {
+
+		v, err := GetValidatorByOprAddr(txs[i].Validator)
+		if err != nil {
+			return validatorsList, err
+		}
+		validatorsList = append(validatorsList, v)
+	}
+
+	return validatorsList, nil
+}
+
+// We need to make sure that `cosmologger` is able to collect all
+// validator's addresses and store them in the DB
+func GetAllValidators() ([]ValidatorRecord, error) {
+
+	rows, err := database.DB.Load(database.TABLE_VALIDATORS, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	validators := DBRowToValidatorRecords(rows)
+	return validators, err
 }

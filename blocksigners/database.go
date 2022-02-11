@@ -13,6 +13,12 @@ func DBRowToBlockSignersRecord(row database.RowType) types.BlockSignersRecord {
 		return types.BlockSignersRecord{}
 	}
 
+	for i := range row {
+		if row[i] == nil {
+			row[i] = ""
+		}
+	}
+
 	return types.BlockSignersRecord{
 
 		BlockHeight: row[database.FIELD_BLOCK_SIGNERS_BLOCK_HEIGHT].(uint64),

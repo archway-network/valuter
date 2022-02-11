@@ -13,7 +13,11 @@ func DBRowToBlockRecord(row database.RowType) types.BlockRecord {
 		return types.BlockRecord{}
 	}
 
-	row[database.FIELD_BLOCKS_BLOCK_HASH] = ""
+	for i := range row {
+		if row[i] == nil {
+			row[i] = ""
+		}
+	}
 
 	return types.BlockRecord{
 

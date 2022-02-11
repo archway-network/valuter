@@ -13,11 +13,11 @@ import (
 /*----------------------*/
 
 /*
-* This function implements GET /challenges/gov
+* This function implements GET /challenges/uptime
  */
-func GetGovWinners(resp http.ResponseWriter, req *http.Request, params routing.Params) {
+func GetPerformanceTestWinners(resp http.ResponseWriter, req *http.Request, params routing.Params) {
 
-	winnersList, err := tasks.GetGovWinners()
+	winnersList, err := tasks.GetPerformanceTestWinners()
 
 	if err != nil {
 		log.Printf("Error in db query: %v", err)
@@ -30,15 +30,15 @@ func GetGovWinners(resp http.ResponseWriter, req *http.Request, params routing.P
 
 /*-------------*/
 /*
-* This function implements GET /challenges/gov/:proposal_id
+* This function implements GET /challenges/uptime/:burst_index
  */
-func GetGovWinnersPerProposal(resp http.ResponseWriter, req *http.Request, params routing.Params) {
+func GetPerformanceTestWinnersPerLoadBurst(resp http.ResponseWriter, req *http.Request, params routing.Params) {
 
-	proposalId, err := strconv.Atoi(params.ByName("proposal_id"))
+	burstIndex, err := strconv.Atoi(params.ByName("burst_index"))
 	if err != nil {
-		proposalId = 0
+		burstIndex = 0
 	}
-	winnersList, err := tasks.GetGovWinnersPerProposal(uint64(proposalId))
+	winnersList, err := tasks.GetPerformanceTestWinnersPerLoadBurst(burstIndex)
 
 	if err != nil {
 		log.Printf("Error in db query: %v", err)

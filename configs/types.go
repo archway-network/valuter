@@ -11,28 +11,18 @@ type Configuration struct {
 	Tasks struct {
 		Gov struct {
 			MaxWinners int      `json:"max_winners"` // Max number of winners for this tasks
-			Proposals  []uint64 `json:"proposals"`   // The list of Proposal Ids to be investigated
 			Reward     uint64   `json:"reward"`      // Reward for each winner
+			Proposals  []uint64 `json:"proposals"`   // The list of Proposal Ids to be investigated
 		} `json:"gov"`
 
 		ValidatorGenesis struct { // Validators who joined at genesis
 			MaxWinners int    `json:"max_winners"` // Max number of winners for this tasks
 			Reward     uint64 `json:"reward"`      // Reward for each winner
-			Condition  struct {
-				JoinHight   uint64 `json:"join_hight"`   // The Block hight that the validator is suppose to join
-				SignPercent int    `json:"sign_percent"` // The percentage of blocks that should be signed by the validator
-			} `json:"condition"` // Winner Condition
-
 		} `json:"validator_genesis"`
 
 		ValidatorJoin struct { // Validators who joined after genesis
 			MaxWinners int    `json:"max_winners"` // Max number of winners for this tasks
 			Reward     uint64 `json:"reward"`      // Reward for each winner
-			Condition  struct {
-				JoinHight   uint64 `json:"join_hight"`   // The Block hight that the validator is suppose to join
-				SignPercent int    `json:"sign_percent"` // The percentage of blocks that should be signed by the validator
-			} `json:"condition"` // Winner Condition
-
 		} `json:"validator_join"`
 
 		JailUnjail struct {
@@ -45,13 +35,26 @@ type Configuration struct {
 			Reward     uint64 `json:"reward"`      // Reward for each winner
 		} `json:"staking"`
 
+		NodeUpgrade struct {
+			MaxWinners int    `json:"max_winners"` // Max number of winners for this tasks
+			Reward     uint64 `json:"reward"`      // Reward for each winner
+
+			Condition struct {
+				UpgradeHight uint64 `json:"upgrade_hight"` // The Block hight that the upgraded validator must sign
+
+			} `json:"condition"` // Winner Condition
+
+		} `json:"node_upgrade"`
+
 		UpTime struct {
 			MaxWinners int    `json:"max_winners"` // Max number of winners for this tasks
 			Reward     uint64 `json:"reward"`      // Reward for each winner
+
+			// There might be multiple load bursts
 			Conditions []struct {
-				StartHight    uint64 `json:"start_hight"`    // The Block hight that the load burst starts
-				EndHight      uint64 `json:"end_hight"`      // The Block hight that the load burst ends
-				UptimePercent int    `json:"uptime_percent"` // The percentage of blocks that the winners must not miss to sign
+				StartHight    uint64  `json:"start_hight"`    // The Block hight that the load burst starts
+				EndHight      uint64  `json:"end_hight"`      // The Block hight that the load burst ends
+				UptimePercent float32 `json:"uptime_percent"` // The percentage of blocks that the winners must not miss to sign
 			} `json:"conditions"` // Uptime Conditions
 
 		} `json:"uptime"`

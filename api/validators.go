@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/archway-network/valuter/blocksigners"
 	"github.com/archway-network/valuter/tools"
 	"github.com/archway-network/valuter/validators"
 	routing "github.com/julienschmidt/httprouter"
@@ -74,20 +75,15 @@ func GetValidator(resp http.ResponseWriter, req *http.Request, params routing.Pa
 func GetGenesisValidators(resp http.ResponseWriter, req *http.Request, params routing.Params) {
 
 	// limitOffset := tools.GetLimitOffsetFromHttpReq(req)
+	listOfValidators, err := blocksigners.GetSignersByBlockHeight(1)
 
-	// validators, pagination, err := tasks.GetGenesisValidators()
+	if err != nil {
+		log.Printf("Error in db query: %v", err)
+		http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	// if err != nil {
-	// 	log.Printf("Error in db query: %v", err)
-	// 	http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// tools.SendJSON(resp,
-	// 	map[string]interface{}{
-	// 		"pagination": pagination,
-	// 		"rows":       validators,
-	// 	})
+	tools.SendJSON(resp, listOfValidators)
 }
 
 /*-------------*/
@@ -95,23 +91,18 @@ func GetGenesisValidators(resp http.ResponseWriter, req *http.Request, params ro
 /*
 * This function implements GET /validators/joined
  */
-func GetJoinedLaterValidators(resp http.ResponseWriter, req *http.Request, params routing.Params) {
-
+func GetJoinedAfterGenesisValidators(resp http.ResponseWriter, req *http.Request, params routing.Params) {
 	// limitOffset := tools.GetLimitOffsetFromHttpReq(req)
 
-	// validators, pagination, err := tasks.GetJoinedAfterGenesisValidators()
+	listOfValidators, err := validators.GetJoinedAfterGenesisValidators()
 
-	// if err != nil {
-	// 	log.Printf("Error in db query: %v", err)
-	// 	http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
+	if err != nil {
+		log.Printf("Error in db query: %v", err)
+		http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	// tools.SendJSON(resp,
-	// 	map[string]interface{}{
-	// 		"pagination": pagination,
-	// 		"rows":       validators,
-	// 	})
+	tools.SendJSON(resp, listOfValidators)
 }
 
 /*-------------*/

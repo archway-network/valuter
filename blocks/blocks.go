@@ -31,6 +31,29 @@ func GetLatestBlock() (types.BlockRecord, error) {
 	return DBRowToBlockRecord(rows[0]), nil
 }
 
+func GetLatestBlockHeight() (uint64, error) {
+
+	SQL := fmt.Sprintf(
+		`SELECT MAX("%s") AS "result" FROM "%s"`,
+
+		database.FIELD_BLOCKS_HEIGHT,
+		database.TABLE_BLOCKS,
+	)
+
+	rows, err := database.DB.Query(SQL, database.QueryParams{})
+	if err != nil {
+		return 0, err
+	}
+
+	if len(rows) == 0 ||
+		rows[0] == nil ||
+		rows[0]["result"] == nil {
+		return 0, nil
+	}
+
+	return uint64(rows[0]["result"].(int64)), nil
+}
+
 func GetBlockByHeight(height uint64) (types.BlockRecord, error) {
 
 	SQL := fmt.Sprintf(`
