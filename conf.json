@@ -25,7 +25,7 @@
                 "kyc_id": "phone1"
             }
         },
-        "verifier_account": "cosmos1gjtvly9lel6zskvwtvlg5vhwpu9c9wawmyjhz4"
+        "verifier_account": ""
     },
     
     "tasks":{
@@ -83,25 +83,6 @@
             "address": "archwayvalcons",
             "pubkey": "archwayvalconspub"
         }
-    },
-
-    "XX_bech32_prefix" : {
-        "account" :{
-            "address": "cosmos",
-            "pubkey": "cosmospub"
-        },
-        "validator" :{
-            "address": "cosmosvaloper",
-            "pubkey": "cosmosvaloperpub"
-        },
-        "consensus" :{
-            "address": "cosmosvalcons",
-            "pubkey": "cosmosvalconspub"
-        }
-    },
-
-    "report":{
-        "output_dir": "./output"
     },
 
     "api":{
