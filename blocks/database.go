@@ -17,7 +17,7 @@ func DBRowToBlockRecord(row database.RowType) types.BlockRecord {
 
 	return types.BlockRecord{
 
-		BlockHash: row[database.FIELD_BLOCKS_BLOCK_HASH].(string),
+		BlockHash: string(row[database.FIELD_BLOCKS_BLOCK_HASH].([]uint8)),
 		Height:    uint64(row[database.FIELD_BLOCKS_HEIGHT].(int64)),
 		NumOfTxs:  uint64(row[database.FIELD_BLOCKS_NUM_OF_TXS].(int64)),
 		Time:      row[database.FIELD_BLOCKS_TIME].(time.Time),

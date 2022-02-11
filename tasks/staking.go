@@ -1,207 +1,99 @@
 package tasks
 
-// import (
+import (
+	"fmt"
 
-// 	// sdk "github.com/cosmos/cosmos-sdk/types"
-// 	// slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	"github.com/archway-network/valuter/configs"
+	"github.com/archway-network/valuter/database"
+	"github.com/archway-network/valuter/tx"
+	"github.com/archway-network/valuter/winners"
+)
 
-// 	"fmt"
-// 	"log"
+func GetStakingWinners() (winners.WinnersList, error) {
 
-// 	"github.com/archway-network/testeval/configs"
-// 	"github.com/archway-network/testeval/events"
-// 	"github.com/archway-network/testeval/progressbar"
-// 	"github.com/archway-network/testeval/winners"
-// 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
-// 	"github.com/gogo/protobuf/proto"
-// 	"google.golang.org/grpc"
-// )
+	var winnersList winners.WinnersList
 
-// func GetStakingWinners(conn *grpc.ClientConn) (winners.WinnersList, error) {
+	// If someone has done the task more than once, there will be more than a record here,
+	// But that's not a problem, as winners list is distinct
+	SQL := fmt.Sprintf(`
+		SELECT "%s", "%s"
+		FROM "%s" 
+		WHERE "%s" IN(
+				SELECT "%s" FROM "%s" 
+				WHERE "%s" IN (
+							SELECT "%s" FROM "%s" 
+							WHERE "%s" = $1
+							GROUP BY "%s"
+							HAVING COUNT( "%s") >= 2
+							) 
+							AND
+					"%s" IN ($2, $3)
+				GROUP BY "%s"
+				HAVING COUNT( "%s") >= 2
+			) 
+			AND "%s" = $4
+		ORDER BY 
+			"%s" ASC`, // >= 2 is because we want the participants to delegate at least to two validators
 
-// 	var winnersList winners.WinnersList
+		database.FIELD_TX_EVENTS_SENDER,
+		database.FIELD_TX_EVENTS_HEIGHT,
 
-// 	offset := uint64(0)
+		database.TABLE_TX_EVENTS,
 
-// 	for {
+		database.FIELD_TX_EVENTS_SENDER,
 
-// 		fmt.Printf("\nRetrieving delegators list [offset: %d]...\n", offset)
-// 		delegatorsList, lastOffset, err := getListOfDelegatorsTwice(conn, configs.Configs.Tasks.Staking.MaxWinners, offset)
-// 		offset = lastOffset
-// 		if err != nil {
-// 			return winners.WinnersList{}, err
-// 		}
+		database.FIELD_TX_EVENTS_SENDER,
+		database.TABLE_TX_EVENTS,
+		database.FIELD_TX_EVENTS_SENDER,
 
-// 		fmt.Printf("\nProcessing the delegators list...\n")
+		database.FIELD_TX_EVENTS_SENDER,
+		database.TABLE_TX_EVENTS,
+		database.FIELD_TX_EVENTS_ACTION,
+		database.FIELD_TX_EVENTS_SENDER,
+		database.FIELD_TX_EVENTS_VALIDATOR,
 
-// 		var bar progressbar.Bar
-// 		bar.NewOption(0, int64(delegatorsList.Length()))
-// 		bar.Play(0)
+		database.FIELD_TX_EVENTS_ACTION,
+		database.FIELD_TX_EVENTS_SENDER,
+		database.FIELD_TX_EVENTS_VALIDATOR,
 
-// 		// Let's check which delegators did at least one Redelegate or undelegate
-// 		for i := 0; i < delegatorsList.Length(); i++ {
-// 			delegator := delegatorsList.GetItem(i)
-// 			bar.Play(int64(i))
+		database.FIELD_TX_EVENTS_ACTION,
+		database.FIELD_TX_EVENTS_HEIGHT,
+	)
 
-// 			redelegated, err := hasRedelegated(conn, delegator.Address)
-// 			if err != nil {
-// 				return winners.WinnersList{}, err
-// 			}
+	rows, err := database.DB.Query(SQL,
+		database.QueryParams{
+			tx.ACTION_DELEGATE,
+			tx.ACTION_BEGIN_REDELEGATE,
+			tx.ACTION_BEGIN_UNBONDING,
+			tx.ACTION_WITHDRAW_DELEGATOR_REWARD,
+		})
+	if err != nil {
+		return winnersList, err
+	}
 
-// 			undelegated, err := hasUndelegated(conn, delegator.Address)
-// 			if err != nil {
-// 				return winners.WinnersList{}, err
-// 			}
+	for i := range rows {
+		newWinner := winners.Winner{
+			Address: rows[i][database.FIELD_TX_EVENTS_SENDER].(string),
+			Rewards: configs.Configs.Tasks.Staking.Reward,
+		}
 
-// 			claimedStakingRewards, err := hasClaimedStakingRewards(conn, delegator.Address)
-// 			if err != nil {
-// 				return winners.WinnersList{}, err
-// 			}
+		// if configs.Configs.IdVerification.Required {
+		// 	verified, err := newWinner.Verify(conn)
+		// 	if err != nil {
+		// 		return winners.WinnersList{}, err
+		// 	}
+		// 	if !verified {
+		// 		continue //ignore the unverified winners
+		// 	}
+		// }
 
-// 			if (redelegated || undelegated) && claimedStakingRewards {
+		winnersList.Append(newWinner)
 
-// 				newWinner := winners.Winner{
-// 					Address: delegator.Address,
-// 					Rewards: configs.Configs.Tasks.Staking.Reward,
-// 				}
+		if winnersList.Length() >= configs.Configs.Tasks.Staking.MaxWinners {
+			break // Max winners reached
+		}
 
-// 				if configs.Configs.IdVerification.Required {
-// 					verified, err := newWinner.Verify(conn)
-// 					if err != nil {
-// 						return winners.WinnersList{}, err
-// 					}
-// 					if !verified {
-// 						continue //ignore the unverified winners
-// 					}
-// 				}
+	}
 
-// 				winnersList.Append(newWinner)
-// 			}
-// 		}
-// 		bar.Finish()
-
-// 		if winnersList.Length() >= configs.Configs.Tasks.Staking.MaxWinners {
-// 			winnersList = winnersList.Trim(configs.Configs.Tasks.Staking.MaxWinners)
-// 			break
-// 		}
-// 	}
-// 	return winnersList, nil
-// }
-
-// // This function retrieves the list of delegators who had delegated at least two times
-// // to at least two distinct validators
-// func getListOfDelegatorsTwice(conn *grpc.ClientConn, maxDelegators int, offset uint64) (winners.WinnersList, uint64, error) {
-
-// 	var winnersList winners.WinnersList
-// 	var delegatorsList map[string]string = make(map[string]string) // map[ delegatorAddress ] validatorAdress
-
-// 	var bar progressbar.Bar
-// 	bar.NewOption(0, int64(maxDelegators))
-// 	bar.Play(0)
-
-// 	for {
-// 		response, err := events.GetTxEvents(conn,
-// 			[]string{
-// 				"message.module='staking'",
-// 				"message.action='/cosmos.staking.v1beta1.MsgDelegate'",
-// 			}, uint64(100), offset)
-
-// 		if err != nil {
-// 			return winners.WinnersList{}, offset, err
-// 		}
-// 		offset += uint64(len(response.TxResponses))
-
-// 		for i := range response.TxResponses {
-
-// 			delegationMsg := staking.MsgDelegate{}
-// 			err := proto.Unmarshal(response.Txs[i].Body.Messages[0].Value, &delegationMsg)
-// 			if err != nil {
-// 				log.Printf("Error unmarshaling: %s", err.Error())
-// 				continue
-// 			}
-
-// 			// Check if we have seen this delegator before (since min delegation must be 2)
-// 			if val, ok := delegatorsList[delegationMsg.DelegatorAddress]; ok {
-
-// 				// The two delegations must be with two distinct validators
-// 				if val != delegationMsg.ValidatorAddress {
-
-// 					// This list adds items only one time
-// 					winnersList.Append(winners.Winner{
-// 						Address:    delegationMsg.DelegatorAddress,
-// 						Timestamp:  response.TxResponses[i].Timestamp,
-// 						TxResponse: response.TxResponses[i],
-// 					})
-// 				}
-// 			}
-// 			bar.Play(int64(winnersList.Length()))
-
-// 			delegatorsList[delegationMsg.DelegatorAddress] = delegationMsg.ValidatorAddress
-// 		}
-
-// 		if winnersList.Length() >= maxDelegators {
-// 			winnersList = winnersList.Trim(maxDelegators)
-// 			break
-// 		}
-// 	}
-
-// 	bar.Finish()
-// 	return winnersList, offset, nil
-// }
-
-// func hasRedelegated(conn *grpc.ClientConn, delegatorAddress string) (bool, error) {
-// 	response, err := events.GetTxEvents(conn,
-// 		[]string{
-// 			"message.module='staking'",
-// 			"message.action='/cosmos.staking.v1beta1.MsgBeginRedelegate'",
-// 			fmt.Sprintf("message.sender='%s'", delegatorAddress),
-// 		}, 100, 0)
-// 	if err != nil {
-// 		return false, err
-// 	}
-
-// 	if response == nil ||
-// 		response.TxResponses == nil ||
-// 		len(response.TxResponses) == 0 {
-// 		return false, nil
-// 	}
-// 	return true, nil
-// }
-
-// func hasUndelegated(conn *grpc.ClientConn, delegatorAddress string) (bool, error) {
-// 	response, err := events.GetTxEvents(conn,
-// 		[]string{
-// 			"message.module='staking'",
-// 			"message.action='/cosmos.staking.v1beta1.MsgUndelegate'",
-// 			fmt.Sprintf("message.sender='%s'", delegatorAddress),
-// 		}, 100, 0)
-// 	if err != nil {
-// 		return false, err
-// 	}
-
-// 	if response == nil ||
-// 		response.TxResponses == nil ||
-// 		len(response.TxResponses) == 0 {
-// 		return false, nil
-// 	}
-// 	return true, nil
-// }
-
-// func hasClaimedStakingRewards(conn *grpc.ClientConn, delegatorAddress string) (bool, error) {
-// 	response, err := events.GetTxEvents(conn,
-// 		[]string{
-// 			// "message.module='distribution'",
-// 			"message.action='/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward'",
-// 			fmt.Sprintf("message.sender='%s'", delegatorAddress),
-// 		}, 100, 0)
-// 	if err != nil {
-// 		return false, err
-// 	}
-
-// 	if response == nil ||
-// 		response.TxResponses == nil ||
-// 		len(response.TxResponses) == 0 {
-// 		return false, nil
-// 	}
-// 	return true, nil
-// }
+	return winnersList, nil
+}

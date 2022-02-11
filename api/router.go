@@ -20,10 +20,15 @@ func setupRouter() *routing.Router {
 	router.GET("/winners", GetWinners)
 	router.GET("/winners/:address", GetWinner)
 
+	router.GET("/challenges/staking", GetStakingWinners)
+	router.GET("/challenges/gov", GetGovWinners)
+
 	router.GET("/validators", GetValidators)
 	router.GET("/validators/validator/:address", GetValidator)
 	router.GET("/validators/genesis", GetGenesisValidators)
 	router.GET("/validators/joined", GetJoinedLaterValidators)
+
+	router.GET("/validators/unjailed", GetUnjailedValidators)
 
 	return router
 }

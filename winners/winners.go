@@ -12,6 +12,12 @@ func (w *WinnersList) GetItem(index int) Winner {
 
 /*------------------*/
 
+func (w *WinnersList) GetItems() []Winner {
+	return w.list
+}
+
+/*------------------*/
+
 // This function merges two lists of winners if a winner already exist, it is not added
 func (w *WinnersList) Merge(newList WinnersList) {
 	for i := range newList.list {

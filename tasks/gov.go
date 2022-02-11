@@ -1,70 +1,89 @@
 package tasks
 
-// import (
-// 	"fmt"
-// 	"log"
+import (
+	"fmt"
 
-// 	"github.com/archway-network/testeval/configs"
-// 	"github.com/archway-network/testeval/winners"
+	"github.com/archway-network/valuter/configs"
+	"github.com/archway-network/valuter/database"
+	"github.com/archway-network/valuter/tx"
+	"github.com/archway-network/valuter/winners"
+)
 
-// 	"github.com/cosmos/cosmos-sdk/types/tx"
-// 	"github.com/gogo/protobuf/proto"
+func GetGovWinnersPerProposal(proposalId uint64) (winners.WinnersList, error) {
 
-// 	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
+	var winnersList winners.WinnersList
 
-// 	"google.golang.org/grpc"
-// )
+	// If someone has done the task more than once, there will be more than a record here,
+	// But that's not a problem, as winners list is distinct
+	SQL := fmt.Sprintf(`
+		SELECT "%s", "%s" 
+		FROM "%s" 
+		WHERE 
+			"%s" = $1 AND 
+			"%s" = $2
+		ORDER BY "%s" ASC`, // >= 2 is because we want the participants to delegate at least to two validators
 
-// func retrieveProposalWinnersFromResponse(response *tx.GetTxsEventResponse) (winners.WinnersList, error) {
-// 	var winnersList winners.WinnersList
-// 	for i := range response.TxResponses {
+		database.FIELD_TX_EVENTS_SENDER,
+		database.FIELD_TX_EVENTS_HEIGHT,
 
-// 		voteMsg := gov.MsgVote{}
-// 		err := proto.Unmarshal(response.Txs[i].Body.Messages[0].Value, &voteMsg)
-// 		if err != nil {
-// 			log.Printf("Error unmarshaling: %s", err.Error())
-// 			continue
-// 		}
+		database.TABLE_TX_EVENTS,
 
-// 		winnersList.Append(
-// 			winners.Winner{
-// 				Address:    voteMsg.Voter,
-// 				Rewards:    configs.Configs.Tasks.Gov.Reward,
-// 				Timestamp:  response.TxResponses[i].Timestamp,
-// 				TxResponse: response.TxResponses[i],
-// 			})
-// 	}
+		database.FIELD_TX_EVENTS_ACTION,
+		database.FIELD_TX_EVENTS_PROPOSAL_ID,
 
-// 	return winnersList, nil
+		database.FIELD_TX_EVENTS_HEIGHT,
+	)
 
-// }
+	rows, err := database.DB.Query(SQL,
+		database.QueryParams{
+			tx.ACTION_VOTE,
+			proposalId,
+		})
+	if err != nil {
+		return winnersList, err
+	}
 
-// func GetGovProposalWinners(conn *grpc.ClientConn, proposalId uint64) (winners.WinnersList, error) {
+	for i := range rows {
+		newWinner := winners.Winner{
+			Address: rows[i][database.FIELD_TX_EVENTS_SENDER].(string),
+			Rewards: configs.Configs.Tasks.Gov.Reward,
+		}
 
-// 	return winners.GetWinnersByTxEvents(conn, []string{
-// 		"message.module='governance'",
-// 		"message.action='/cosmos.gov.v1beta1.MsgVote'", //TODO: Maybe we need to find the proper constant instead
-// 		fmt.Sprintf("proposal_vote.proposal_id='%d'", proposalId),
-// 	},
-// 		configs.Configs.Tasks.Gov.MaxWinners,
-// 		retrieveProposalWinnersFromResponse)
-// }
+		// if configs.Configs.IdVerification.Required {
+		// 	verified, err := newWinner.Verify(conn)
+		// 	if err != nil {
+		// 		return winners.WinnersList{}, err
+		// 	}
+		// 	if !verified {
+		// 		continue //ignore the unverified winners
+		// 	}
+		// }
 
-// func GetGovAllProposalsWinners(conn *grpc.ClientConn) (winners.WinnersList, error) {
+		winnersList.Append(newWinner)
 
-// 	var winnersList winners.WinnersList
+		if winnersList.Length() >= configs.Configs.Tasks.Gov.MaxWinners {
+			break // Max winners reached
+		}
 
-// 	for i := range configs.Configs.Tasks.Gov.Proposals {
+	}
 
-// 		proposalId := uint64(configs.Configs.Tasks.Gov.Proposals[i])
-// 		fmt.Printf("\nProcessing proposal # %d\n", proposalId)
-// 		proposalWinnerList, err := GetGovProposalWinners(conn, proposalId)
-// 		if err != nil {
-// 			return winnersList, err
-// 		}
+	return winnersList, nil
+}
 
-// 		winnersList.MergeWithAggregateRewards(proposalWinnerList)
-// 	}
+func GetGovWinners() (winners.WinnersList, error) {
 
-// 	return winnersList, nil
-// }
+	var winnersList winners.WinnersList
+
+	for i := range configs.Configs.Tasks.Gov.Proposals {
+
+		proposalId := uint64(configs.Configs.Tasks.Gov.Proposals[i])
+		proposalWinnerList, err := GetGovWinnersPerProposal(proposalId)
+		if err != nil {
+			return winnersList, err
+		}
+
+		winnersList.MergeWithAggregateRewards(proposalWinnerList)
+	}
+
+	return winnersList, nil
+}

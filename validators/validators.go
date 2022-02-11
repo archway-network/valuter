@@ -7,6 +7,7 @@ import (
 	"github.com/archway-network/valuter/blocks"
 	"github.com/archway-network/valuter/configs"
 	"github.com/archway-network/valuter/database"
+	"github.com/archway-network/valuter/tx"
 	"github.com/archway-network/valuter/types"
 )
 
@@ -70,18 +71,19 @@ func (v *ValidatorRecord) GetValidatorInfo() (ValidatorInfo, error) {
 	}
 
 	// Calculating uptime
-	latestBlock, err := blocks.GetLatestBlock()
+	// Total blocks is more accurate as `cosmologger` might miss some blocks under some cirscumstance
+	totalLoggedBlocks, err := blocks.GetTotalBlocks()
 	if err != nil {
 		return vInfo, err
 	}
-	expectedSignedBlocks := latestBlock.Height - vInfo.FirstSignedBlockHeight
+	expectedSignedBlocks := totalLoggedBlocks - vInfo.FirstSignedBlockHeight
 	vInfo.UpTime = float32(vInfo.TotalSignedBlocks) / float32(expectedSignedBlocks)
 
 	return vInfo, nil
 
 }
 
-func GetValidators(limitOffset types.DBLimitOffset) ([]ValidatorRecord, types.Pagination, error) {
+func GetValidatorsWithPagination(limitOffset types.DBLimitOffset) ([]ValidatorRecord, types.Pagination, error) {
 
 	// Prepare pagination
 	totalRows := uint64(0)
@@ -118,4 +120,43 @@ func GetValidators(limitOffset types.DBLimitOffset) ([]ValidatorRecord, types.Pa
 
 	validators := DBRowToValidatorRecords(rows)
 	return validators, pagination, err
+}
+
+func GetUnjailedValidators() ([]ValidatorWithTx, error) {
+
+	SQL := fmt.Sprintf(`
+			SELECT * FROM (
+				SELECT DISTINCT ON(v."%s") * 
+				FROM 
+					"%s" AS v,
+					"%s" AS t
+				WHERE 
+					t."%s" = '%s' AND
+					v."%s" = t."%s"
+				ORDER BY v."%s"
+			) AS "tmp"
+			ORDER BY "%s" ASC`,
+
+		database.FIELD_VALIDATORS_OPR_ADDR,
+
+		database.TABLE_VALIDATORS,
+		database.TABLE_TX_EVENTS,
+
+		database.FIELD_TX_EVENTS_ACTION,
+		tx.ACTION_UNJAIL,
+
+		database.FIELD_VALIDATORS_OPR_ADDR,
+		database.FIELD_TX_EVENTS_SENDER, // The ValOper address is set to the `sender` field for `unjail`
+
+		database.FIELD_VALIDATORS_OPR_ADDR,
+
+		database.FIELD_TX_EVENTS_HEIGHT,
+	)
+
+	rows, err := database.DB.Query(SQL, database.QueryParams{})
+	if err != nil {
+		return nil, err
+	}
+
+	return DBRowToValidatorWithTxs(rows), err
 }

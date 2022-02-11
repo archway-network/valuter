@@ -18,7 +18,7 @@ func GetValidators(resp http.ResponseWriter, req *http.Request, params routing.P
 
 	limitOffset := tools.GetLimitOffsetFromHttpReq(req)
 
-	validators, pagination, err := validators.GetValidators(limitOffset)
+	validators, pagination, err := validators.GetValidatorsWithPagination(limitOffset)
 
 	if err != nil {
 		log.Printf("API Call Error: %v", err)
@@ -112,6 +112,24 @@ func GetJoinedLaterValidators(resp http.ResponseWriter, req *http.Request, param
 	// 		"pagination": pagination,
 	// 		"rows":       validators,
 	// 	})
+}
+
+/*-------------*/
+
+/*
+* This function implements GET /validators/unjailed
+ */
+func GetUnjailedValidators(resp http.ResponseWriter, req *http.Request, params routing.Params) {
+
+	validators, err := validators.GetUnjailedValidators()
+
+	if err != nil {
+		log.Printf("Error in db query: %v", err)
+		http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tools.SendJSON(resp, validators)
 }
 
 /*-------------*/

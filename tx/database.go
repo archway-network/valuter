@@ -11,7 +11,7 @@ func DBRowToTxRecord(row database.RowType) types.TxRecord {
 
 	return types.TxRecord{
 
-		TxHash:      row[database.FIELD_TX_EVENTS_TX_HASH].(string),
+		TxHash:      string(row[database.FIELD_TX_EVENTS_TX_HASH].([]uint8)),
 		Height:      row[database.FIELD_TX_EVENTS_HEIGHT].(uint64),
 		Module:      row[database.FIELD_TX_EVENTS_MODULE].(string),
 		Sender:      row[database.FIELD_TX_EVENTS_SENDER].(string),
@@ -21,7 +21,7 @@ func DBRowToTxRecord(row database.RowType) types.TxRecord {
 		Amount:      row[database.FIELD_TX_EVENTS_AMOUNT].(string),
 		TxAccSeq:    row[database.FIELD_TX_EVENTS_TX_ACCSEQ].(string),
 		TxSignature: row[database.FIELD_TX_EVENTS_TX_SIGNATURE].(string),
-		ProposalId:  row[database.FIELD_TX_EVENTS_PROPOSAL_ID].(uint64),
+		ProposalId:  uint64(row[database.FIELD_TX_EVENTS_PROPOSAL_ID].(int64)),
 		TxMemo:      row[database.FIELD_TX_EVENTS_TX_MEMO].(string),
 		Json:        row[database.FIELD_TX_EVENTS_JSON].(string),
 		LogTime:     row[database.FIELD_TX_EVENTS_LOG_TIME].(time.Time),

@@ -53,3 +53,25 @@ func GetBlockByHeight(height uint64) (types.BlockRecord, error) {
 
 	return DBRowToBlockRecord(rows[0]), nil
 }
+
+func GetTotalBlocks() (uint64, error) {
+
+	SQL := fmt.Sprintf(`
+		SELECT 
+			COUNT(*) AS "total"
+		FROM "%s"`,
+		database.TABLE_BLOCKS,
+	)
+
+	rows, err := database.DB.Query(SQL, database.QueryParams{})
+	if err != nil {
+		return 0, err
+	}
+	if len(rows) == 0 ||
+		rows[0] == nil ||
+		rows[0]["total"] == nil {
+		return 0, nil
+	}
+
+	return uint64(rows[0]["total"].(int64)), nil
+}

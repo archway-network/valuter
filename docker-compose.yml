@@ -55,7 +55,7 @@ services:
         max-file: "10"
     volumes:
       # - ./:/root/app
-      # - ./:/go/src/app
+      - ../cosmologger:/go/src/app  # We need to use nested repo
       - ./cosmologger_conf.json:/app/conf.json
     networks:
       - archwaynetwork

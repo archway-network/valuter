@@ -7,7 +7,10 @@
         "call_timeout": 30
     },
     
-    "subscriber_name":"cosmologger",
+    "tendermint_client": {
+        "subscriber_name":"cosmologger",
+        "connect_retry": 60
+    },
 
     "bech32_prefix" : {
         "account" :{
