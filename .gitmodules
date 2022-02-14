@@ -1,0 +1,3 @@
+[submodule "valuter-ui"]
+	path = valuter-ui
+	url = git@github.com:archway-network/valuter-ui.git
