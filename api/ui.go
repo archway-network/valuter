@@ -42,6 +42,8 @@ func IndexPage(resp http.ResponseWriter, req *http.Request, params routing.Param
 		setTimeout( () => {window.location.href="/ui/"}, 500)
 	</script>
 	`
+
+	homeHTML = "Ciao, it works :)"
 	resp.Header().Set("Content-Type", "text/html; charset=utf-8")
 	resp.Write([]byte(homeHTML))
 }

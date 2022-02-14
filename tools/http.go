@@ -18,6 +18,10 @@ func SendJSON(resp http.ResponseWriter, obj interface{}) {
 		return
 	}
 
+	// Allow CORS here By *
+	resp.Header().Set("Access-Control-Allow-Origin", "*")
+	resp.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Write(data)
 }
