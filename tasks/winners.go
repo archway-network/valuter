@@ -54,7 +54,7 @@ func GetAllWinners() (winners.WinnersList, error) {
 // Since this function is not used frequently, let's have an easy implementation
 func GetWinnerByAddress(address string) ([]winners.WinnerChallenge, error) {
 
-	results := make([]winners.WinnerChallenge, 10)
+	var results []winners.WinnerChallenge
 
 	w, err := GetGenesisValidatorsWinners()
 	if err != nil {
