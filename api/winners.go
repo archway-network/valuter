@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/archway-network/valuter/configs"
 	"github.com/archway-network/valuter/tasks"
 	"github.com/archway-network/valuter/tools"
 	routing "github.com/julienschmidt/httprouter"
@@ -43,4 +44,13 @@ func GetWinner(resp http.ResponseWriter, req *http.Request, params routing.Param
 	}
 
 	tools.SendJSON(resp, winnerResults)
+}
+
+/*-------------*/
+/*
+* This function implements GET /challenges
+ */
+func GetListOfChallenges(resp http.ResponseWriter, req *http.Request, params routing.Params) {
+
+	tools.SendJSON(resp, configs.Configs.Tasks)
 }

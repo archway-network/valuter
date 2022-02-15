@@ -1,67 +1,66 @@
 {
-    "block_explorer": {
-        "tx_hash":"https://www.mintscan.io/cosmos/txs/%s",
+    "block-explorer": {
+        "tx-hash":"https://www.mintscan.io/cosmos/txs/%s",
         "account":"https://www.mintscan.io/cosmos/account/%s",
         "validator":"https://www.mintscan.io/cosmos/validators/%s",
-        "COMMENTED_tx_hash":"https://explorer.constantine-1.archway.tech/transactions/%s"
+        "COMMENTED-tx-hash":"https://explorer.constantine-1.archway.tech/transactions/%s"
     },
 
-    "id_verification":{
+    "id-verification":{
         "required": false,
-        "html_report": true,
-        "input_file":{
+        "input-file":{
             "path":"./input/us-500.csv",
             "fields":{
                 "email": "email",
-                "kyc_id": "phone1"
+                "kyc-id": "phone1"
             }
         },
-        "verifier_account": ""
+        "verifier-account": ""
     },
     
     "tasks":{
         
-        "validator_genesis": {
-            "max_winners" : 10,
+        "validators-genesis": {
+            "max-winners" : 10,
             "reward": 480
         },
-        "validator_join": {
-            "max_winners" : 10,
+        "validators-joined": {
+            "max-winners" : 10,
             "reward": 720
         },
        
-        "jail_unjail": {
-            "max_winners" : 10,
+        "jail-unjail": {
+            "max-winners" : 10,
             "reward": 720
         },
         "staking": {
-            "max_winners" : 10,
+            "max-winners" : 10,
             "reward": 480
         },
         "gov": {
-            "max_winners" : 10,
+            "max-winners" : 10,
             "proposals": [1,2,3],
             "reward": 480          
         },
-        "node_upgrade": {
-            "max_winners" : 10,
+        "node-upgrade": {
+            "max-winners" : 10,
             "reward": 480,
             "condition": {
-                "upgrade_hight": 1000
+                "upgrade-hight": 1000
             }
         },
         "uptime": {
-            "max_winners" : 10,
+            "max-winners" : 10,
             "reward": 480,
             "conditions": [{
-                "start_hight": 100,
-                "end_hight": 200,
-                "uptime_percent": 0.80
+                "start-hight": 100,
+                "end-hight": 200,
+                "uptime-percent": 0.80
             }]
         }
     },
 
-    "bech32_prefix" : {
+    "bech32-prefix" : {
         "account" :{
             "address": "archway",
             "pubkey": "archway"
@@ -77,7 +76,7 @@
     },
 
     "api":{
-        "rows_per_page" : 200
+        "rows-per-page" : 200
     }
 
 }
