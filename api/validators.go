@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/archway-network/valuter/blocksigners"
+	"github.com/archway-network/valuter/tasks"
 	"github.com/archway-network/valuter/tools"
 	"github.com/archway-network/valuter/validators"
 	routing "github.com/julienschmidt/httprouter"
@@ -121,6 +122,59 @@ func GetUnjailedValidators(resp http.ResponseWriter, req *http.Request, params r
 	}
 
 	tools.SendJSON(resp, validators)
+}
+
+/*-------------*/
+
+/*
+* This function implements GET /challenges/validators-genesis
+ */
+func GetGenesisValidatorsWinners(resp http.ResponseWriter, req *http.Request, params routing.Params) {
+
+	winnersList, err := tasks.GetGenesisValidatorsWinners()
+
+	if err != nil {
+		log.Printf("Error in db query: %v", err)
+		http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tools.SendJSON(resp, winnersList.GetItems())
+}
+
+/*-------------*/
+/*
+* This function implements GET /challenges/validators-joined
+ */
+func GetJoinedAfterGenesisValidatorsWinners(resp http.ResponseWriter, req *http.Request, params routing.Params) {
+
+	winnersList, err := tasks.GetJoinedAfterGenesisValidatorsWinners()
+
+	if err != nil {
+		log.Printf("Error in db query: %v", err)
+		http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tools.SendJSON(resp, winnersList.GetItems())
+}
+
+/*-------------*/
+
+/*
+* This function implements GET /challenges/validators-joined
+ */
+func GetUnjailedValidatorsWinners(resp http.ResponseWriter, req *http.Request, params routing.Params) {
+
+	winnersList, err := tasks.GetUnjailedValidatorsWinners()
+
+	if err != nil {
+		log.Printf("Error in db query: %v", err)
+		http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tools.SendJSON(resp, winnersList.GetItems())
 }
 
 /*-------------*/

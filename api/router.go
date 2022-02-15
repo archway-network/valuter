@@ -26,9 +26,9 @@ func setupRouter() *routing.Router {
 	router.GET("/challenges/gov/:proposal_id", GetGovWinnersPerProposal)
 	router.GET("/challenges/staking", GetStakingWinners)
 	router.GET("/challenges/node-upgrade", GetNodeUpgradeWinners)
-	router.GET("/challenges/validators-genesis", GetNodeUpgradeWinners)
-	router.GET("/challenges/validators-joined", GetNodeUpgradeWinners)
-	router.GET("/challenges/jail-unjail", GetNodeUpgradeWinners)
+	router.GET("/challenges/validators-genesis", GetGenesisValidatorsWinners)
+	router.GET("/challenges/validators-joined", GetJoinedAfterGenesisValidatorsWinners)
+	router.GET("/challenges/jail-unjail", GetUnjailedValidatorsWinners)
 	router.GET("/challenges/uptime", GetPerformanceTestWinners)
 	router.GET("/challenges/uptime/:burst_index", GetPerformanceTestWinnersPerLoadBurst)
 
