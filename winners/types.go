@@ -19,3 +19,8 @@ type VerificationDataType struct { //map[email]...
 	Email string
 	KYCId string
 }
+
+type WinnerChallenge struct {
+	Challenge string
+	Rewards   uint64
+}

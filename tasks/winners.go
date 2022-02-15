@@ -52,16 +52,19 @@ func GetAllWinners() (winners.WinnersList, error) {
 }
 
 // Since this function is not used frequently, let's have an easy implementation
-func GetWinnerByAddress(address string) (map[string]uint64, error) {
+func GetWinnerByAddress(address string) ([]winners.WinnerChallenge, error) {
 
-	results := make(map[string]uint64)
+	results := make([]winners.WinnerChallenge, 10)
 
 	w, err := GetGenesisValidatorsWinners()
 	if err != nil {
 		return nil, err
 	}
 	if index := w.FindByAddress(address); index != -1 {
-		results["validator_genesis"] = w.GetItem(index).Rewards
+		results = append(results, winners.WinnerChallenge{
+			Challenge: "validator-genesis",
+			Rewards:   w.GetItem(index).Rewards,
+		})
 	}
 
 	w, err = GetJoinedAfterGenesisValidatorsWinners()
@@ -69,7 +72,10 @@ func GetWinnerByAddress(address string) (map[string]uint64, error) {
 		return nil, err
 	}
 	if index := w.FindByAddress(address); index != -1 {
-		results["validator_join"] = w.GetItem(index).Rewards
+		results = append(results, winners.WinnerChallenge{
+			Challenge: "validator-join",
+			Rewards:   w.GetItem(index).Rewards,
+		})
 	}
 
 	w, err = GetUnjailedValidatorsWinners()
@@ -77,7 +83,10 @@ func GetWinnerByAddress(address string) (map[string]uint64, error) {
 		return nil, err
 	}
 	if index := w.FindByAddress(address); index != -1 {
-		results["jail_unjail"] = w.GetItem(index).Rewards
+		results = append(results, winners.WinnerChallenge{
+			Challenge: "jail-unjail",
+			Rewards:   w.GetItem(index).Rewards,
+		})
 	}
 
 	w, err = GetStakingWinners()
@@ -85,7 +94,10 @@ func GetWinnerByAddress(address string) (map[string]uint64, error) {
 		return nil, err
 	}
 	if index := w.FindByAddress(address); index != -1 {
-		results["staking"] = w.GetItem(index).Rewards
+		results = append(results, winners.WinnerChallenge{
+			Challenge: "staking",
+			Rewards:   w.GetItem(index).Rewards,
+		})
 	}
 
 	w, err = GetGovWinners()
@@ -93,7 +105,10 @@ func GetWinnerByAddress(address string) (map[string]uint64, error) {
 		return nil, err
 	}
 	if index := w.FindByAddress(address); index != -1 {
-		results["gov"] = w.GetItem(index).Rewards
+		results = append(results, winners.WinnerChallenge{
+			Challenge: "gov",
+			Rewards:   w.GetItem(index).Rewards,
+		})
 	}
 
 	w, err = GetNodeUpgradeWinners()
@@ -101,7 +116,10 @@ func GetWinnerByAddress(address string) (map[string]uint64, error) {
 		return nil, err
 	}
 	if index := w.FindByAddress(address); index != -1 {
-		results["node_upgrade"] = w.GetItem(index).Rewards
+		results = append(results, winners.WinnerChallenge{
+			Challenge: "node-upgrade",
+			Rewards:   w.GetItem(index).Rewards,
+		})
 	}
 
 	w, err = GetPerformanceTestWinners()
@@ -109,14 +127,20 @@ func GetWinnerByAddress(address string) (map[string]uint64, error) {
 		return nil, err
 	}
 	if index := w.FindByAddress(address); index != -1 {
-		results["uptime"] = w.GetItem(index).Rewards
+		results = append(results, winners.WinnerChallenge{
+			Challenge: "uptime",
+			Rewards:   w.GetItem(index).Rewards,
+		})
 	}
 
 	total := uint64(0)
 	for i := range results {
-		total += results[i]
+		total += results[i].Rewards
 	}
-	results["total"] = total
+	results = append(results, winners.WinnerChallenge{
+		Challenge: "total",
+		Rewards:   total,
+	})
 
 	return results, nil
 }
