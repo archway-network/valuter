@@ -120,3 +120,29 @@ The reward amount is calculated for each proposal vote. e.g. if there are 3 prop
 * * `start-hight`: The beginning of the load burst.
 * * `end-hight`: The end of the load burst.
 * * `uptime-percent`: minimum uptime requirement.
+
+
+## Exposed APIs
+
+
+* `/` : Just to test if the API server is working
+* `/configs` : Shows the configs that are configured in the `conf.json` file.
+* `/winners` : Lists all the winners with their combined rewards.
+* `/winners/:address` : Shows the details of a specific winner with all challenges that she/he won.
+
+* `/challenges` : Lists all the available challenges.
+* `/challenges/gov` : Lists the winners of governance challenge.
+* `/challenges/gov/:proposal_id` : Lists the winners of a particular proposal.
+* `/challenges/staking` : Lists the winners of staking challenge.
+* `/challenges/node-upgrade` : Lists the winners of upgrade challenge.
+* `/challenges/validators-genesis` : Lists the winners of validators joining at genesis.
+* `/challenges/validators-joined` : Lists the winners of validators joining after genesis.
+* `/challenges/jail-unjail` : Lists the winners of validator lockout challenge.
+* `/challenges/uptime` : Lists the winners of performance test challenge.
+* `/challenges/uptime/:burst_index` : Lists the winners of a specific performance test round.
+
+* `/validators` : Lists all the validators.
+* `/validators/validator/:address` : Shows a particular validator.
+* `/validators/genesis` : Lists all the genesis validators.
+* `/validators/joined` : Lists all the validators joined after genesis.
+* `/validators/unjailed` : Lists all the validators who have done unjailing.
