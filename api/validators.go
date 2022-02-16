@@ -18,9 +18,9 @@ import (
  */
 func GetValidators(resp http.ResponseWriter, req *http.Request, params routing.Params) {
 
-	limitOffset := tools.GetLimitOffsetFromHttpReq(req)
-
-	validators, pagination, err := validators.GetValidatorsWithPagination(limitOffset)
+	// limitOffset := tools.GetLimitOffsetFromHttpReq(req)
+	// validators, pagination, err := validators.GetValidatorsWithPagination(limitOffset)
+	valInfos, err := validators.GetAllValidatorsWithInfo()
 
 	if err != nil {
 		log.Printf("API Call Error: %v", err)
@@ -28,11 +28,7 @@ func GetValidators(resp http.ResponseWriter, req *http.Request, params routing.P
 		return
 	}
 
-	tools.SendJSON(resp,
-		map[string]interface{}{
-			"pagination": pagination,
-			"rows":       validators,
-		})
+	tools.SendJSON(resp, valInfos)
 }
 
 /*-------------*/

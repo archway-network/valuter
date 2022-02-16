@@ -199,8 +199,6 @@ func GetJoinedAfterGenesisValidators() ([]ValidatorRecord, error) {
 	return validatorsList, nil
 }
 
-// We need to make sure that `cosmologger` is able to collect all
-// validator's addresses and store them in the DB
 func GetAllValidators() ([]ValidatorRecord, error) {
 
 	rows, err := database.DB.Load(database.TABLE_VALIDATORS, nil)
@@ -210,4 +208,23 @@ func GetAllValidators() ([]ValidatorRecord, error) {
 
 	validators := DBRowToValidatorRecords(rows)
 	return validators, err
+}
+
+func GetAllValidatorsWithInfo() ([]ValidatorInfo, error) {
+
+	var valInfoList []ValidatorInfo
+	listOfValidators, err := GetAllValidators()
+	if err != nil {
+		return nil, err
+	}
+	for i := range listOfValidators {
+
+		valInfo, err := listOfValidators[i].GetValidatorInfo()
+		if err != nil {
+			return valInfoList, err
+		}
+		valInfoList = append(valInfoList, valInfo)
+	}
+
+	return valInfoList, nil
 }
