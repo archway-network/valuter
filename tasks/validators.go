@@ -12,12 +12,22 @@ func GetGenesisValidatorsWinners() (winners.WinnersList, error) {
 	var winnersList winners.WinnersList
 
 	// Those who signged the first block are considered as genesis validators
-	listOfValidators, err := blocksigners.GetSignersByBlockHeight(1)
+	// Since some joins might not be able to make it to the first block we change it to a higher block like 20
+	listOfValidators, err := blocksigners.GetSignersByBlockHeight(20)
 	if err != nil {
 		return winnersList, err
 	}
 
 	for i := range listOfValidators {
+
+		valInfo, err := listOfValidators[i].GetValidatorInfo()
+		if err != nil {
+			return winnersList, err
+		}
+		if valInfo.UpTime < configs.Configs.Tasks.ValidatorGenesis.UptimePercent {
+			// Let's just ignore this validator
+			continue
+		}
 
 		newWinner := winners.Winner{
 			Address: listOfValidators[i].OprAddr,
@@ -53,6 +63,15 @@ func GetJoinedAfterGenesisValidatorsWinners() (winners.WinnersList, error) {
 	}
 
 	for i := range listOfValidators {
+
+		valInfo, err := listOfValidators[i].GetValidatorInfo()
+		if err != nil {
+			return winnersList, err
+		}
+		if valInfo.UpTime < configs.Configs.Tasks.ValidatorJoin.UptimePercent {
+			// Let's just ignore this validator
+			continue
+		}
 
 		newWinner := winners.Winner{
 			Address: listOfValidators[i].OprAddr,

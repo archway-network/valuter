@@ -21,21 +21,23 @@
     "tasks":{
         
         "validators-genesis": {
-            "max-winners" : 10,
-            "reward": 480
+            "max-winners" : 125,
+            "reward": 500,
+            "uptime-percent": 0.50
         },
         "validators-joined": {
-            "max-winners" : 10,
-            "reward": 720
+            "max-winners" : 125,
+            "reward": 500,
+            "uptime-percent": 0.50
         },
        
         "jail-unjail": {
-            "max-winners" : 10,
-            "reward": 720
+            "max-winners" : 125,
+            "reward": 500
         },
         "staking": {
-            "max-winners" : 10,
-            "reward": 480
+            "max-winners" : 500,
+            "reward": 500
         },
         "gov": {
             "max-winners" : 10,

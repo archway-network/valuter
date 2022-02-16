@@ -16,13 +16,15 @@ type Configuration struct {
 		} `json:"gov"`
 
 		ValidatorGenesis struct { // Validators who joined at genesis
-			MaxWinners int    `json:"max-winners"` // Max number of winners for this tasks
-			Reward     uint64 `json:"reward"`      // Reward for each winner
+			MaxWinners    int     `json:"max-winners"`    // Max number of winners for this tasks
+			Reward        uint64  `json:"reward"`         // Reward for each winner
+			UptimePercent float32 `json:"uptime-percent"` // The percentage of blocks that the winners must not miss to sign
 		} `json:"validators-genesis"`
 
 		ValidatorJoin struct { // Validators who joined after genesis
-			MaxWinners int    `json:"max-winners"` // Max number of winners for this tasks
-			Reward     uint64 `json:"reward"`      // Reward for each winner
+			MaxWinners    int     `json:"max-winners"`    // Max number of winners for this tasks
+			Reward        uint64  `json:"reward"`         // Reward for each winner
+			UptimePercent float32 `json:"uptime-percent"` // The percentage of blocks that the winners must not miss to sign
 		} `json:"validators-joined"`
 
 		JailUnjail struct {
