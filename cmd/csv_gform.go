@@ -35,7 +35,6 @@ var importGFormCSV = &cobra.Command{
 		}
 
 		f, err := os.Open(csvFilePath)
-		fmt.Println(err)
 		if err != nil {
 			return err
 		}
@@ -43,6 +42,8 @@ var importGFormCSV = &cobra.Command{
 
 		csvReader := csv.NewReader(f)
 		csvReader.Comma = rune(delimiter[0])
+
+		fmt.Printf("\nProcessing the form data...\n")
 
 		var jsonCols []int
 		for rowCounter := 0; ; rowCounter++ {
@@ -68,10 +69,12 @@ var importGFormCSV = &cobra.Command{
 			for i := range jsonCols {
 				err := participants.Import(rec[jsonCols[i]])
 				if err != nil {
-					return err
+					fmt.Printf("\n====> Error on importing: %s \n%v\n", err, rec[jsonCols[i]])
 				}
+				fmt.Printf("\r\tProcessing record %5d \t%d", rowCounter, i)
 			}
 		}
+		fmt.Printf("\nDone.\n")
 
 		return nil
 	},

@@ -48,7 +48,7 @@ func ListenAndServeHTTP(addr string) {
 
 	router := setupRouter()
 	if addr == "" {
-		addr = ":8080"
+		addr = ":8090"
 	}
 
 	log.Printf("[INFO ] Serving on %s", addr)

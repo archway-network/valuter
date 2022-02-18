@@ -1,0 +1,47 @@
+package participants
+
+import (
+	"github.com/archway-network/valuter/database"
+)
+
+func DBRowToParticipantRecord(row database.RowType) ParticipantRecord {
+
+	if row == nil {
+		return ParticipantRecord{}
+	}
+
+	for i := range row {
+		if row[i] == nil {
+			row[i] = ""
+		}
+	}
+
+	return ParticipantRecord{
+		AccountAddress: row[database.FIELD_PARTICIPANTS_ACCOUNT_ADDRESS].(string),
+		FullLegalName:  row[database.FIELD_PARTICIPANTS_FULL_LEGAL_NAME].(string),
+		GithubHandle:   row[database.FIELD_PARTICIPANTS_GITHUB_HANDLE].(string),
+		EmailAddress:   row[database.FIELD_PARTICIPANTS_EMAIL_ADDRESS].(string),
+		PubKey:         row[database.FIELD_PARTICIPANTS_PUBKEY].(string),
+	}
+}
+
+func DBRowToParticipantRecords(row []database.RowType) []ParticipantRecord {
+
+	var res []ParticipantRecord
+	for i := range row {
+		res = append(res, DBRowToParticipantRecord(row[i]))
+	}
+
+	return res
+}
+
+func (p ParticipantRecord) getDBRow() database.RowType {
+	return database.RowType{
+
+		database.FIELD_PARTICIPANTS_ACCOUNT_ADDRESS: p.AccountAddress,
+		database.FIELD_PARTICIPANTS_FULL_LEGAL_NAME: p.FullLegalName,
+		database.FIELD_PARTICIPANTS_GITHUB_HANDLE:   p.GithubHandle,
+		database.FIELD_PARTICIPANTS_EMAIL_ADDRESS:   p.EmailAddress,
+		database.FIELD_PARTICIPANTS_PUBKEY:          p.PubKey,
+	}
+}
