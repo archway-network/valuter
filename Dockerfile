@@ -6,6 +6,7 @@ WORKDIR /go/src/app/
 ENV GOPATH=/go/
 
 RUN apk add --no-cache \
+    git \
     && mkdir /build/ \
     # && cp -r docs /build \
     && go get github.com/go-delve/delve/cmd/dlv
@@ -34,12 +35,5 @@ WORKDIR /app/
 COPY --from=development /build .
 RUN apk --no-cache add \
     curl 
-
-# COPY ui/node_modules/react/umd ui/node_modules/react/umd
-# COPY ui/node_modules/react-dom/umd ui/node_modules/react-dom/umd
-# COPY ui/index.html \
-#     ui/favicon.ico \
-#     ui/
-# COPY ui/dist ui/dist
 
 ENTRYPOINT ["./app"]
