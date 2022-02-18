@@ -71,7 +71,7 @@ var importGFormCSV = &cobra.Command{
 				if err != nil {
 					fmt.Printf("\n====> Error on importing: %s \n%v\n", err, rec[jsonCols[i]])
 				}
-				fmt.Printf("\r\tProcessing record %5d \t%d", rowCounter, i)
+				fmt.Printf("\r\tProcessing record %5d", rowCounter)
 			}
 		}
 		fmt.Printf("\nDone.\n")
