@@ -23,7 +23,6 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.4
 	github.com/spf13/cobra v1.3.0
-	github.com/tendermint/tendermint v0.34.14
 )
 
 require (
@@ -99,6 +98,7 @@ require (
 	github.com/tendermint/btcd v0.1.1 // indirect
 	github.com/tendermint/crypto v0.0.0-20191022145703-50d29ede1e15 // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
+	github.com/tendermint/tendermint v0.34.14 // indirect
 	github.com/tendermint/tm-db v0.6.4 // indirect
 	github.com/zondax/hid v0.9.0 // indirect
 	go.etcd.io/bbolt v1.3.5 // indirect
