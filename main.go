@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/archway-network/valuter/api"
+	"github.com/archway-network/valuter/cmd"
 	"github.com/archway-network/valuter/database"
 )
 
@@ -23,6 +24,12 @@ func main() {
 	database.DB = database.New(database.Postgres, psqlconn)
 	defer database.DB.Close()
 
-	api.ListenAndServeHTTP(os.Getenv("SERVING_ADDR"))
+	// Run the command only if there is input arguments
+	if len(os.Args) > 1 {
+		cmd.Execute()
+		return
+	}
 
+	// Otherwise start the API server
+	api.ListenAndServeHTTP(os.Getenv("SERVING_ADDR"))
 }
