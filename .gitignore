@@ -16,3 +16,4 @@ vendor/
 .vscode/
 valuter
 __debug_bin
+my_keys/
