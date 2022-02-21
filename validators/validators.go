@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/archway-network/cosmologger/database"
+	cosmoLogTx "github.com/archway-network/cosmologger/tx"
 	"github.com/archway-network/valuter/blocks"
 	"github.com/archway-network/valuter/tools"
 	"github.com/archway-network/valuter/tx"
@@ -171,7 +172,7 @@ func GetUnjailedValidators() ([]ValidatorWithTx, error) {
 		database.TABLE_TX_EVENTS,
 
 		database.FIELD_TX_EVENTS_ACTION,
-		tx.ACTION_UNJAIL,
+		cosmoLogTx.ACTION_UNJAIL,
 
 		database.FIELD_VALIDATORS_OPR_ADDR,
 		database.FIELD_TX_EVENTS_SENDER, // The ValOper address is set to the `sender` field for `unjail`
@@ -193,7 +194,7 @@ func GetJoinedAfterGenesisValidators() ([]ValidatorRecord, error) {
 
 	var validatorsList []ValidatorRecord
 
-	txs, err := tx.GetAllTxsByAction(tx.ACTION_CREATE_VALIDATOR)
+	txs, err := tx.GetAllTxsByAction(cosmoLogTx.ACTION_CREATE_VALIDATOR)
 	if err != nil {
 		return validatorsList, err
 	}
