@@ -19,7 +19,7 @@ replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
 
 require (
 	github.com/archway-network/augusta-testnet-signer v0.0.0-20220205125505-210977b7663d
-	github.com/archway-network/cosmologger v0.0.0-20220221060042-010405b1829a
+	github.com/archway-network/cosmologger v0.0.0-20220221090903-f9487dbab951
 	github.com/cosmos/cosmos-sdk v0.45.1
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/spf13/cobra v1.3.0

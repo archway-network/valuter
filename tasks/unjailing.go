@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/archway-network/valuter/configs"
+	"github.com/archway-network/valuter/participants"
 	"github.com/archway-network/valuter/validators"
 	"github.com/archway-network/valuter/winners"
 )
@@ -10,27 +11,29 @@ func GetUnjailedValidatorsWinners() (winners.WinnersList, error) {
 
 	var winnersList winners.WinnersList
 
-	activeValidators, err := validators.GetUnjailedValidators()
+	listOfValidators, err := validators.GetUnjailedValidators()
 	if err != nil {
 		return winners.WinnersList{}, err
 	}
 
-	for i := range activeValidators {
+	for i := range listOfValidators {
 
-		newWinner := winners.Winner{
-			Address: activeValidators[i].OprAddr,
-			Rewards: configs.Configs.Tasks.JailUnjail.Reward,
+		valInfo, err := listOfValidators[i].GetValidatorInfo()
+		if err != nil {
+			return winnersList, err
 		}
 
-		// if configs.Configs.IdVerification.Required {
-		// 	verified, err := newWinner.Verify(conn)
-		// 	if err != nil {
-		// 		return winners.WinnersList{}, err
-		// 	}
-		// 	if !verified {
-		// 		continue //ignore the unverified winners
-		// 	}
-		// }
+		pRecord, err := participants.GetParticipantByAddress(listOfValidators[i].AccAddr)
+		if err != nil {
+			return winnersList, err
+		}
+
+		newWinner := winners.Winner{
+			Address:         listOfValidators[i].AccAddr,
+			Rewards:         configs.Configs.Tasks.JailUnjail.Reward,
+			ValidatorInfo:   valInfo,
+			ParticipantData: pRecord,
+		}
 
 		winnersList.Append(newWinner)
 

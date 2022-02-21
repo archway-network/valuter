@@ -5,6 +5,7 @@ import "time"
 type ValidatorRecord struct {
 	ConsAddr string `json:"cons_address"`
 	OprAddr  string `json:"opr_address"`
+	AccAddr  string `json:"acc_address"`
 }
 
 type ValidatorInfo struct {

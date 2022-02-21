@@ -15,6 +15,7 @@ func DBRowToValidatorRecord(row database.RowType) ValidatorRecord {
 	return ValidatorRecord{
 		ConsAddr: row[database.FIELD_VALIDATORS_CONS_ADDR].(string),
 		OprAddr:  row[database.FIELD_VALIDATORS_OPR_ADDR].(string),
+		AccAddr:  row[database.FIELD_VALIDATORS_ACCOUNT_ADDR].(string),
 	}
 }
 
@@ -38,6 +39,7 @@ func DBRowToValidatorWithTx(row database.RowType) ValidatorWithTx {
 		ValidatorRecord: ValidatorRecord{
 			ConsAddr: row[database.FIELD_VALIDATORS_CONS_ADDR].(string),
 			OprAddr:  row[database.FIELD_VALIDATORS_OPR_ADDR].(string),
+			AccAddr:  row[database.FIELD_VALIDATORS_ACCOUNT_ADDR].(string),
 		},
 		TxHash:  string(row[database.FIELD_TX_EVENTS_TX_HASH].([]uint8)), //char
 		Height:  uint64(row[database.FIELD_TX_EVENTS_HEIGHT].(int64)),

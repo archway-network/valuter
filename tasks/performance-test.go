@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/archway-network/valuter/configs"
+	"github.com/archway-network/valuter/participants"
 	"github.com/archway-network/valuter/validators"
 	"github.com/archway-network/valuter/winners"
 )
@@ -44,20 +45,22 @@ func GetPerformanceTestWinnersPerLoadBurst(loadIndex int) (winners.WinnersList, 
 			continue
 		}
 
-		newWinner := winners.Winner{
-			Address: listOfValidators[i].OprAddr,
-			Rewards: configs.Configs.Tasks.UpTime.Reward,
+		valInfo, err := listOfValidators[i].GetValidatorInfo()
+		if err != nil {
+			return winnersList, err
 		}
 
-		// if configs.Configs.IdVerification.Required {
-		// 	verified, err := newWinner.Verify(conn)
-		// 	if err != nil {
-		// 		return winners.WinnersList{}, err
-		// 	}
-		// 	if !verified {
-		// 		continue //ignore the unverified winners
-		// 	}
-		// }
+		pRecord, err := participants.GetParticipantByAddress(listOfValidators[i].AccAddr)
+		if err != nil {
+			return winnersList, err
+		}
+
+		newWinner := winners.Winner{
+			Address:         listOfValidators[i].AccAddr,
+			Rewards:         configs.Configs.Tasks.UpTime.Reward,
+			ValidatorInfo:   valInfo,
+			ParticipantData: pRecord,
+		}
 
 		winnersList.Append(newWinner)
 		if winnersList.Length() >= configs.Configs.Tasks.UpTime.MaxWinners {

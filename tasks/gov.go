@@ -5,6 +5,7 @@ import (
 
 	"github.com/archway-network/cosmologger/database"
 	"github.com/archway-network/valuter/configs"
+	"github.com/archway-network/valuter/participants"
 	"github.com/archway-network/valuter/tx"
 	"github.com/archway-network/valuter/winners"
 )
@@ -44,20 +45,19 @@ func GetGovWinnersPerProposal(proposalId uint64) (winners.WinnersList, error) {
 	}
 
 	for i := range rows {
-		newWinner := winners.Winner{
-			Address: rows[i][database.FIELD_TX_EVENTS_SENDER].(string),
-			Rewards: configs.Configs.Tasks.Gov.Reward,
+
+		address := rows[i][database.FIELD_TX_EVENTS_SENDER].(string)
+
+		pRecord, err := participants.GetParticipantByAddress(address)
+		if err != nil {
+			return winnersList, err
 		}
 
-		// if configs.Configs.IdVerification.Required {
-		// 	verified, err := newWinner.Verify(conn)
-		// 	if err != nil {
-		// 		return winners.WinnersList{}, err
-		// 	}
-		// 	if !verified {
-		// 		continue //ignore the unverified winners
-		// 	}
-		// }
+		newWinner := winners.Winner{
+			Address:         address,
+			Rewards:         configs.Configs.Tasks.Gov.Reward,
+			ParticipantData: pRecord,
+		}
 
 		winnersList.Append(newWinner)
 

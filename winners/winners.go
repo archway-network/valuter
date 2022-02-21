@@ -124,7 +124,8 @@ func (w *WinnersList) GetVerifiedOnly() WinnersList {
 
 	var output WinnersList
 	for i := range w.list {
-		if w.list[i].Verified {
+		// If the winner has participant data, that means it is verified
+		if w.list[i].ParticipantData.AccountAddress != "" {
 			output.Append(w.list[i])
 		}
 	}
