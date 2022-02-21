@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/archway-network/cosmologger/database"
+	cosmoLogTx "github.com/archway-network/cosmologger/tx"
 	"github.com/archway-network/valuter/configs"
 	"github.com/archway-network/valuter/participants"
-	"github.com/archway-network/valuter/tx"
 	"github.com/archway-network/valuter/winners"
 )
 
@@ -63,10 +63,10 @@ func GetStakingWinners() (winners.WinnersList, error) {
 
 	rows, err := database.DB.Query(SQL,
 		database.QueryParams{
-			tx.ACTION_DELEGATE,
-			tx.ACTION_BEGIN_REDELEGATE,
-			tx.ACTION_BEGIN_UNBONDING,
-			tx.ACTION_WITHDRAW_DELEGATOR_REWARD,
+			cosmoLogTx.ACTION_DELEGATE,
+			cosmoLogTx.ACTION_BEGIN_REDELEGATE,
+			cosmoLogTx.ACTION_BEGIN_UNBONDING,
+			cosmoLogTx.ACTION_WITHDRAW_DELEGATOR_REWARD,
 		})
 	if err != nil {
 		return winnersList, err

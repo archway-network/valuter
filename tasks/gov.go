@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/archway-network/cosmologger/database"
+	cosmoLogTx "github.com/archway-network/cosmologger/tx"
 	"github.com/archway-network/valuter/configs"
 	"github.com/archway-network/valuter/participants"
-	"github.com/archway-network/valuter/tx"
 	"github.com/archway-network/valuter/winners"
 )
 
@@ -37,7 +37,7 @@ func GetGovWinnersPerProposal(proposalId uint64) (winners.WinnersList, error) {
 
 	rows, err := database.DB.Query(SQL,
 		database.QueryParams{
-			tx.ACTION_VOTE,
+			cosmoLogTx.ACTION_VOTE,
 			proposalId,
 		})
 	if err != nil {
