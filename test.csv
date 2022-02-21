@@ -1,0 +1,14 @@
+Timestamp,Email Address,Your Full Legal Name,Are you a submitting as an ? ,I would best describe myself as a,Country of Citizenship,Organization Name,Organization Github,Organization Website,Challenges,Please paste ID JSON here,Transaction ID,Operator address,Moniker,Please paste ID JSON here,Transaction ID,Please paste ID JSON here,Transaction ID,dApp name,dApp description,Repository,Link to functional dApp demo,Link to video demo,Which content challenge are you submitting for,Title,Link to published content,"Link to social shares (Twitter, etc)",Name of tool,Repository,Description,Link to demo,I would like to receive emails about Archway news and other updates?
+2/2/2022 5:57:28,lukitsbrian@gmail.com,Brian Luk,,"Dev@Tendermint, Network Validator",,,,,,,,,,,,,,,,,,,,,,,,,,,Yes
+2/3/2022 9:17:22,fff@ffff.com,ffff,,,,fff,fff,fff.com,,,,,,,,,,,,,,,,,,,,,,,
+2/16/2022 15:54:39,mojtaba.eskandari@tendermint.com,Moji,Individual,"Network Validator, Community Member, Web3 Software Engineer, cook",Iran,,,,Staking,,,,,"{
+  ""id"": {
+    ""full_legal_name"": ""Moji"",
+    ""github_handle"": ""testMj"",
+    ""email_address"": ""moji@mojtaba.com"",
+    ""account_address"": ""archway1n0w9haqmwnlum4xau97yw4v4hajh42hzttkyag"",
+    ""pub_key"": ""61rphyEDKI3kitHatG3dBObk2eEvfKkUxoI3bSZ6AqPoUcyQ3OQ=""
+  },
+  ""signature"": ""WPhZspsR2jNsrS+Zkd/fko1M8Kw/XXWUorSrroBufUNSphAUIVKpcBC94hZKuBhUacOnUNkRoz2cNgWHPs4KJA==""
+}
+",5E3BEC15DAB7C4FCE70E2F5DDFA2B3704CA92CB2BC512A780EF13467246E9853,,,,,,,,,,,,,,,,Yes

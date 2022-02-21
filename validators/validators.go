@@ -3,8 +3,8 @@ package validators
 import (
 	"fmt"
 
+	"github.com/archway-network/cosmologger/database"
 	"github.com/archway-network/valuter/blocks"
-	"github.com/archway-network/valuter/database"
 	"github.com/archway-network/valuter/tools"
 	"github.com/archway-network/valuter/tx"
 	"github.com/archway-network/valuter/types"

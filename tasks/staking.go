@@ -3,8 +3,8 @@ package tasks
 import (
 	"fmt"
 
+	"github.com/archway-network/cosmologger/database"
 	"github.com/archway-network/valuter/configs"
-	"github.com/archway-network/valuter/database"
 	"github.com/archway-network/valuter/tx"
 	"github.com/archway-network/valuter/winners"
 )

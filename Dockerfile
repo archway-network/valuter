@@ -23,9 +23,10 @@ COPY . /go/src/app/
 COPY main.go my_keys/.ssh/id_rsa* /root/.ssh/
 COPY main.go my_keys/.gitconfig* /root/
 RUN chmod 700 /root/* \
-    && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config \
+    && echo -e "\nHost github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config \
     && cd ~ \
     && git config --global url.ssh://git@github.com/.insteadOf https://github.com/
+
 
 # Let's keep it in a separate layer
 RUN go get github.com/go-delve/delve/cmd/dlv \

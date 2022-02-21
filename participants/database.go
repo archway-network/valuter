@@ -1,7 +1,7 @@
 package participants
 
 import (
-	"github.com/archway-network/valuter/database"
+	"github.com/archway-network/cosmologger/database"
 )
 
 func DBRowToParticipantRecord(row database.RowType) ParticipantRecord {

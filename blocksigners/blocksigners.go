@@ -3,7 +3,7 @@ package blocksigners
 import (
 	"fmt"
 
-	"github.com/archway-network/valuter/database"
+	"github.com/archway-network/cosmologger/database"
 	"github.com/archway-network/valuter/validators"
 )
 

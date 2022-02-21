@@ -3,7 +3,7 @@ package validators
 import (
 	"time"
 
-	"github.com/archway-network/valuter/database"
+	"github.com/archway-network/cosmologger/database"
 )
 
 func DBRowToValidatorRecord(row database.RowType) ValidatorRecord {

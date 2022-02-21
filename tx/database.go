@@ -3,7 +3,7 @@ package tx
 import (
 	"time"
 
-	"github.com/archway-network/valuter/database"
+	"github.com/archway-network/cosmologger/database"
 	"github.com/archway-network/valuter/types"
 )
 

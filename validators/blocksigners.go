@@ -3,8 +3,8 @@ package validators
 import (
 	"fmt"
 
+	"github.com/archway-network/cosmologger/database"
 	"github.com/archway-network/valuter/blocks"
-	"github.com/archway-network/valuter/database"
 )
 
 func (v *ValidatorRecord) GetFirstSignedBlockHeight() (uint64, error) {

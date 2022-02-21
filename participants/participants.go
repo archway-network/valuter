@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	agSigner "github.com/archway-network/augusta-testnet-signer/types"
-	"github.com/archway-network/valuter/database"
+	"github.com/archway-network/cosmologger/database"
 )
 
 type ParticipantRecord agSigner.ID

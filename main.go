@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/archway-network/cosmologger/database"
 	"github.com/archway-network/valuter/api"
 	"github.com/archway-network/valuter/cmd"
-	"github.com/archway-network/valuter/database"
 )
 
 /*--------------*/
