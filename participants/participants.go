@@ -73,3 +73,27 @@ func getAgSignerContainer(jsonStr string) (*agSigner.Container, error) {
 
 	return &container, nil
 }
+
+func GetParticipants() ([]ParticipantRecord, error) {
+
+	rows, err := database.DB.Load(database.TABLE_PARTICIPANTS, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return DBRowToParticipantRecords(rows), err
+}
+
+func GetParticipantByAddress(accAddress string) (ParticipantRecord, error) {
+
+	rows, err := database.DB.Load(database.TABLE_PARTICIPANTS,
+		database.RowType{
+			database.FIELD_PARTICIPANTS_ACCOUNT_ADDRESS: accAddress,
+		})
+
+	if err != nil || rows == nil || len(rows) == 0 {
+		return ParticipantRecord{}, err
+	}
+
+	return DBRowToParticipantRecord(rows[0]), err
+}
