@@ -33,7 +33,7 @@ func GetValidators(resp http.ResponseWriter, req *http.Request, params routing.P
 
 /*-------------*/
 /*
-* This function implements GET /validator/:address
+* This function implements GET /validators/validator/:address
  */
 func GetValidator(resp http.ResponseWriter, req *http.Request, params routing.Params) {
 
@@ -58,6 +58,11 @@ func GetValidator(resp http.ResponseWriter, req *http.Request, params routing.Pa
 	if err != nil {
 		log.Printf("API Call Error: %v", err)
 		http.Error(resp, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if valInfo.ConsAddr == "" {
+		http.Error(resp, "Validator Not Found", http.StatusNotFound)
 		return
 	}
 
