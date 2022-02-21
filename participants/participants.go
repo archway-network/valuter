@@ -7,6 +7,8 @@ import (
 
 	agSigner "github.com/archway-network/augusta-testnet-signer/types"
 	"github.com/archway-network/cosmologger/database"
+	"github.com/archway-network/valuter/tools"
+	"github.com/archway-network/valuter/types"
 )
 
 type ParticipantRecord agSigner.ID
@@ -82,6 +84,38 @@ func GetParticipants() ([]ParticipantRecord, error) {
 	}
 
 	return DBRowToParticipantRecords(rows), err
+}
+
+func GetParticipantsWithPagination(limitOffset types.DBLimitOffset) ([]ParticipantRecord, types.Pagination, error) {
+
+	// Prepare pagination
+	totalRows := uint64(0)
+	{
+		SQL := fmt.Sprintf(`SELECT COUNT(*) AS "total" FROM "%s"`,
+			database.TABLE_PARTICIPANTS,
+		)
+		rows, err := database.DB.Query(SQL, database.QueryParams{})
+		if err != nil {
+			return nil, types.Pagination{}, err
+		}
+		totalRows = uint64(rows[0]["total"].(int64))
+	}
+	pagination := tools.GetPagination(totalRows, limitOffset.Page)
+
+	/*------*/
+
+	SQL := fmt.Sprintf(`SELECT * FROM "%s" LIMIT $1 OFFSET $2`, database.TABLE_PARTICIPANTS)
+
+	rows, err := database.DB.Query(SQL,
+		database.QueryParams{
+			limitOffset.Limit,
+			limitOffset.Offset,
+		})
+	if err != nil {
+		return nil, types.Pagination{}, err
+	}
+
+	return DBRowToParticipantRecords(rows), pagination, err
 }
 
 func GetParticipantByAddress(accAddress string) (ParticipantRecord, error) {

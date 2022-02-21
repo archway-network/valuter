@@ -16,8 +16,8 @@ import (
  */
 func GetParticipants(resp http.ResponseWriter, req *http.Request, params routing.Params) {
 
-	// limitOffset := tools.GetLimitOffsetFromHttpReq(req)
-	records, err := participants.GetParticipants()
+	limitOffset := tools.GetLimitOffsetFromHttpReq(req)
+	records, pagination, err := participants.GetParticipantsWithPagination(limitOffset)
 
 	if err != nil {
 		log.Printf("API Call Error: %v", err)
@@ -25,7 +25,12 @@ func GetParticipants(resp http.ResponseWriter, req *http.Request, params routing
 		return
 	}
 
-	tools.SendJSON(resp, records)
+	tools.SendJSON(resp,
+		map[string]interface{}{
+			"pagination": pagination,
+			"rows":       records,
+		},
+	)
 }
 
 /*-------------*/
