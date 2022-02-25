@@ -14,6 +14,10 @@ func GetStakingWinners() (winners.WinnersList, error) {
 
 	var winnersList winners.WinnersList
 
+	if configs.Configs.Tasks.Staking.MaxWinners == 0 {
+		return winnersList, nil
+	}
+
 	// If someone has done the task more than once, there will be more than a record here,
 	// But that's not a problem, as winners list is distinct
 	SQL := fmt.Sprintf(`

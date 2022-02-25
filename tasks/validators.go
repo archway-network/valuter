@@ -12,6 +12,10 @@ func GetGenesisValidatorsWinners() (winners.WinnersList, error) {
 
 	var winnersList winners.WinnersList
 
+	if configs.Configs.Tasks.ValidatorGenesis.MaxWinners == 0 {
+		return winnersList, nil
+	}
+
 	// Those who signged the first block are considered as genesis validators
 	// Since some joins might not be able to make it to the first block we change it to a higher block like 20
 	listOfValidators, err := blocksigners.GetSignersByBlockHeight(20)
@@ -54,6 +58,10 @@ func GetGenesisValidatorsWinners() (winners.WinnersList, error) {
 func GetJoinedAfterGenesisValidatorsWinners() (winners.WinnersList, error) {
 
 	var winnersList winners.WinnersList
+
+	if configs.Configs.Tasks.ValidatorJoin.MaxWinners == 0 {
+		return winnersList, nil
+	}
 
 	listOfValidators, err := validators.GetJoinedAfterGenesisValidators()
 	if err != nil {

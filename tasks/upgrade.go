@@ -11,6 +11,10 @@ func GetNodeUpgradeWinners() (winners.WinnersList, error) {
 
 	var winnersList winners.WinnersList
 
+	if configs.Configs.Tasks.NodeUpgrade.MaxWinners == 0 {
+		return winnersList, nil
+	}
+
 	listOfValidators, err := blocksigners.GetSignersByBlockHeight(configs.Configs.Tasks.NodeUpgrade.Condition.UpgradeHight)
 	if err != nil {
 		return winnersList, err

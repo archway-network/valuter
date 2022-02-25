@@ -30,6 +30,10 @@ func GetPerformanceTestWinnersPerLoadBurst(loadIndex int) (winners.WinnersList, 
 
 	var winnersList winners.WinnersList
 
+	if configs.Configs.Tasks.UpTime.MaxWinners == 0 {
+		return winnersList, nil
+	}
+
 	listOfValidators, err := GetValidatorsSortedByUpTimeInBlockHeightRange(
 		configs.Configs.Tasks.UpTime.Conditions[loadIndex].StartHight,
 		configs.Configs.Tasks.UpTime.Conditions[loadIndex].EndHight,

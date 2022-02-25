@@ -11,6 +11,10 @@ func GetUnjailedValidatorsWinners() (winners.WinnersList, error) {
 
 	var winnersList winners.WinnersList
 
+	if configs.Configs.Tasks.JailUnjail.MaxWinners == 0 {
+		return winnersList, nil
+	}
+
 	listOfValidators, err := validators.GetUnjailedValidators()
 	if err != nil {
 		return winners.WinnersList{}, err
