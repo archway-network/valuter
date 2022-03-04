@@ -11,7 +11,11 @@ import (
 	"github.com/archway-network/valuter/types"
 )
 
-type ParticipantRecord agSigner.ID
+type ParticipantRecord struct {
+	agSigner.ID
+	KycSessionId string
+	KycVerified  bool
+}
 
 // This function receives a json string of the signed ID,
 // verifies it with the given signature and if it passes,
@@ -38,7 +42,11 @@ func Import(jsonStr string) error {
 	}
 
 	// Let's add it to the database
-	return AddNew(ParticipantRecord(container.ID))
+	return AddNew(ParticipantRecord{
+		ID:           container.ID,
+		KycSessionId: "",
+		KycVerified:  false,
+	})
 }
 
 func AddNew(participant ParticipantRecord) error {
@@ -130,4 +138,38 @@ func GetParticipantByAddress(accAddress string) (ParticipantRecord, error) {
 	}
 
 	return DBRowToParticipantRecord(rows[0]), err
+}
+
+func GetParticipantByEmail(email string) (ParticipantRecord, error) {
+
+	rows, err := database.DB.Load(database.TABLE_PARTICIPANTS,
+		database.RowType{
+			database.FIELD_PARTICIPANTS_EMAIL_ADDRESS: email,
+		})
+
+	if err != nil || rows == nil || len(rows) == 0 {
+		return ParticipantRecord{}, err
+	}
+
+	return DBRowToParticipantRecord(rows[0]), err
+}
+
+// Returns RowsAffected, error
+func (p *ParticipantRecord) UpdateKYC() (int, error) {
+
+	if p.EmailAddress == "" {
+		return 0, fmt.Errorf("email address cannot be empty")
+	}
+
+	uRes, err := database.DB.Update(
+		database.TABLE_PARTICIPANTS,
+		database.RowType{ // Fields to update
+			database.FIELD_PARTICIPANTS_KYC_SESSION_ID: p.KycSessionId,
+			database.FIELD_PARTICIPANTS_KYC_VERIFIED:   p.KycVerified,
+		},
+		database.RowType{ // Conditions
+			database.FIELD_PARTICIPANTS_EMAIL_ADDRESS: p.EmailAddress,
+		},
+	)
+	return int(uRes.RowsAffected), err
 }
