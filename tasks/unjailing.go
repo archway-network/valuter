@@ -32,6 +32,11 @@ func GetUnjailedValidatorsWinners() (winners.WinnersList, error) {
 			return winnersList, err
 		}
 
+		// If the participant is not verified by KYC provider, just ignore it
+		if !pRecord.KycVerified {
+			continue
+		}
+
 		newWinner := winners.Winner{
 			Address:         listOfValidators[i].AccAddr,
 			Rewards:         configs.Configs.Tasks.JailUnjail.Reward,

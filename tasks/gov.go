@@ -57,6 +57,11 @@ func GetGovWinnersPerProposal(proposalId uint64) (winners.WinnersList, error) {
 			return winnersList, err
 		}
 
+		// If the participant is not verified by KYC provider, just ignore it
+		if !pRecord.KycVerified {
+			continue
+		}
+
 		newWinner := winners.Winner{
 			Address:         address,
 			Rewards:         configs.Configs.Tasks.Gov.Reward,

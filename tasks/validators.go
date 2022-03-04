@@ -39,6 +39,11 @@ func GetGenesisValidatorsWinners() (winners.WinnersList, error) {
 			return winnersList, err
 		}
 
+		// If the participant is not verified by KYC provider, just ignore it
+		if !pRecord.KycVerified {
+			continue
+		}
+
 		newWinner := winners.Winner{
 			Address:         listOfValidators[i].AccAddr,
 			Rewards:         configs.Configs.Tasks.ValidatorGenesis.Reward,
@@ -82,6 +87,11 @@ func GetJoinedAfterGenesisValidatorsWinners() (winners.WinnersList, error) {
 		pRecord, err := participants.GetParticipantByAddress(listOfValidators[i].AccAddr)
 		if err != nil {
 			return winnersList, err
+		}
+
+		// If the participant is not verified by KYC provider, just ignore it
+		if !pRecord.KycVerified {
+			continue
 		}
 
 		newWinner := winners.Winner{
