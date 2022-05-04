@@ -6,18 +6,6 @@
         "COMMENTED-tx-hash":"https://explorer.constantine-1.archway.tech/transactions/%s"
     },
 
-    "id-verification":{
-        "required": false,
-        "input-file":{
-            "path":"./input/us-500.csv",
-            "fields":{
-                "email": "email",
-                "kyc-id": "phone1"
-            }
-        },
-        "verifier-account": ""
-    },
-    
     "tasks":{
         
         "validators-genesis": {
@@ -52,11 +40,11 @@
             }
         },
         "uptime": {
-            "max-winners" : 10,
+            "max-winners" : 160,
             "reward": 480,
             "conditions": [{
-                "start-hight": 100,
-                "end-hight": 200,
+                "start-hight": 195947,
+                "end-hight": 198299,
                 "uptime-percent": 0.80
             }]
         }
