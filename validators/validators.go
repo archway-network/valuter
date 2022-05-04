@@ -2,6 +2,7 @@ package validators
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/archway-network/cosmologger/database"
 	cosmoLogTx "github.com/archway-network/cosmologger/tx"
@@ -61,14 +62,19 @@ func (v *ValidatorRecord) GetValidatorInfo() (ValidatorInfo, error) {
 	vInfo.OprAddr = v.OprAddr
 	vInfo.AccAddr = v.AccAddr
 
-	vInfo.FirstSignedBlockHeight, err = v.GetFirstSignedBlockHeight()
+	vInfo.TotalSignedBlocks, err = v.GetTotalSignedBlocks()
 	if err != nil {
 		return vInfo, err
 	}
 
-	vInfo.TotalSignedBlocks, err = v.GetTotalSignedBlocks()
-	if err != nil {
-		return vInfo, err
+	// For sake of optimization
+	if vInfo.TotalSignedBlocks == 0 {
+		vInfo.FirstSignedBlockHeight = 0
+	} else {
+		vInfo.FirstSignedBlockHeight, err = v.GetFirstSignedBlockHeight()
+		if err != nil {
+			return vInfo, err
+		}
 	}
 
 	// Calculating uptime
@@ -236,6 +242,10 @@ func GetAllValidatorsWithInfo() ([]ValidatorInfo, error) {
 		}
 		valInfoList = append(valInfoList, valInfo)
 	}
+
+	sort.Slice(valInfoList, func(i, j int) bool {
+		return valInfoList[i].UpTime > valInfoList[j].UpTime
+	})
 
 	return valInfoList, nil
 }

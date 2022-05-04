@@ -46,7 +46,7 @@ func setupRouter() *routing.Router {
 
 /*-------------------------*/
 
-// ListenAndServeHTTP serves the APIs and the ui
+// ListenAndServeHTTP serves the APIs
 func ListenAndServeHTTP(addr string) {
 
 	router := setupRouter()
