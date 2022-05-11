@@ -61,6 +61,7 @@ func (v *ValidatorRecord) GetValidatorInfo() (ValidatorInfo, error) {
 	vInfo.ConsAddr = v.ConsAddr
 	vInfo.OprAddr = v.OprAddr
 	vInfo.AccAddr = v.AccAddr
+	vInfo.Moniker = v.Moniker
 
 	vInfo.TotalSignedBlocks, err = v.GetTotalSignedBlocks()
 	if err != nil {
