@@ -90,6 +90,7 @@ func (v *ValidatorRecord) GetValidatorInfo() (ValidatorInfo, error) {
 	} else {
 		vInfo.UpTime = float32(vInfo.TotalSignedBlocks) / float32(expectedSignedBlocks)
 	}
+	vInfo.UpTimeAll = float32(vInfo.TotalSignedBlocks) / float32(totalLoggedBlocks)
 
 	return vInfo, nil
 
@@ -102,6 +103,7 @@ func (v *ValidatorRecord) GetValidatorInfoByBlockHeightRange(beginHeight, endHei
 	vInfo.ConsAddr = v.ConsAddr
 	vInfo.OprAddr = v.OprAddr
 	vInfo.AccAddr = v.AccAddr
+	vInfo.Moniker = v.Moniker
 
 	vInfo.FirstSignedBlockHeight, err = v.GetFirstSignedBlockHeightWithBegin(beginHeight)
 	if err != nil {
@@ -120,6 +122,7 @@ func (v *ValidatorRecord) GetValidatorInfoByBlockHeightRange(beginHeight, endHei
 	} else {
 		vInfo.UpTime = float32(vInfo.TotalSignedBlocks) / float32(totalBlocks)
 	}
+	vInfo.UpTimeAll = 0
 
 	return vInfo, nil
 
