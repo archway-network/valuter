@@ -231,6 +231,29 @@ func GetAllValidators() ([]ValidatorRecord, error) {
 	return validators, err
 }
 
+func GetAllValidatorsWithInfoByBlockHeightRange(beginHeight, endHeight uint64) ([]ValidatorInfo, error) {
+
+	var valInfoList []ValidatorInfo
+	listOfValidators, err := GetAllValidators()
+	if err != nil {
+		return nil, err
+	}
+	for i := range listOfValidators {
+
+		valInfo, err := listOfValidators[i].GetValidatorInfoByBlockHeightRange(beginHeight, endHeight)
+		if err != nil {
+			return valInfoList, err
+		}
+		valInfoList = append(valInfoList, valInfo)
+	}
+
+	sort.Slice(valInfoList, func(i, j int) bool {
+		return valInfoList[i].UpTime > valInfoList[j].UpTime
+	})
+
+	return valInfoList, nil
+}
+
 func GetAllValidatorsWithInfo() ([]ValidatorInfo, error) {
 
 	var valInfoList []ValidatorInfo

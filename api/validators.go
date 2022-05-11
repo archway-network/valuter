@@ -3,6 +3,7 @@ package api
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/archway-network/valuter/blocksigners"
 	"github.com/archway-network/valuter/tasks"
@@ -15,12 +16,37 @@ import (
 
 /*
 * This function implements GET /validators
+*                          GET /validators?beginHeight=xx&endHeight=xx
  */
 func GetValidators(resp http.ResponseWriter, req *http.Request, params routing.Params) {
 
-	// limitOffset := tools.GetLimitOffsetFromHttpReq(req)
-	// validators, pagination, err := validators.GetValidatorsWithPagination(limitOffset)
-	valInfos, err := validators.GetAllValidatorsWithInfo()
+	var valInfos []validators.ValidatorInfo
+	var err error
+
+	qryParams := req.URL.Query()
+	if _, ok := qryParams["endHeight"]; ok {
+		var beginHeight, endHeight uint64
+
+		endHeight, err = strconv.ParseUint(qryParams["endHeight"][0], 10, 64)
+		if err != nil {
+			http.Error(resp, "Wrong endHeight: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if _, ok := qryParams["beginHeight"]; ok {
+			beginHeight, err = strconv.ParseUint(qryParams["beginHeight"][0], 10, 64)
+			if err != nil {
+				http.Error(resp, "Wrong beginHeight: "+err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
+
+		valInfos, err = validators.GetAllValidatorsWithInfoByBlockHeightRange(beginHeight, endHeight)
+
+	} else {
+
+		valInfos, err = validators.GetAllValidatorsWithInfo()
+	}
 
 	if err != nil {
 		log.Printf("API Call Error: %v", err)
@@ -29,6 +55,9 @@ func GetValidators(resp http.ResponseWriter, req *http.Request, params routing.P
 	}
 
 	tools.SendJSON(resp, valInfos)
+
+	// limitOffset := tools.GetLimitOffsetFromHttpReq(req)
+	// validators, pagination, err := validators.GetValidatorsWithPagination(limitOffset)
 }
 
 /*-------------*/
