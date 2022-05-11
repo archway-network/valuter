@@ -12,10 +12,16 @@ func DBRowToValidatorRecord(row database.RowType) ValidatorRecord {
 		return ValidatorRecord{}
 	}
 
+	moniker := ""
+	if row[database.FIELD_VALIDATORS_MONIKER] != nil {
+		moniker = row[database.FIELD_VALIDATORS_MONIKER].(string)
+	}
+
 	return ValidatorRecord{
 		ConsAddr: row[database.FIELD_VALIDATORS_CONS_ADDR].(string),
 		OprAddr:  row[database.FIELD_VALIDATORS_OPR_ADDR].(string),
 		AccAddr:  row[database.FIELD_VALIDATORS_ACCOUNT_ADDR].(string),
+		Moniker:  moniker,
 	}
 }
 

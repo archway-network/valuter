@@ -6,6 +6,7 @@ type ValidatorRecord struct {
 	ConsAddr string `json:"cons_address"`
 	OprAddr  string `json:"opr_address"`
 	AccAddr  string `json:"acc_address"`
+	Moniker  string `json:"moniker"`
 }
 
 type ValidatorInfo struct {
