@@ -55,44 +55,13 @@ func GetValidatorByOprAddr(valOprAddr string) (ValidatorRecord, error) {
 }
 
 func (v *ValidatorRecord) GetValidatorInfo() (ValidatorInfo, error) {
-	var vInfo ValidatorInfo
-	var err error
-
-	vInfo.ConsAddr = v.ConsAddr
-	vInfo.OprAddr = v.OprAddr
-	vInfo.AccAddr = v.AccAddr
-	vInfo.Moniker = v.Moniker
-
-	vInfo.TotalSignedBlocks, err = v.GetTotalSignedBlocks()
-	if err != nil {
-		return vInfo, err
-	}
-
-	// For sake of optimization
-	if vInfo.TotalSignedBlocks == 0 {
-		vInfo.FirstSignedBlockHeight = 0
-	} else {
-		vInfo.FirstSignedBlockHeight, err = v.GetFirstSignedBlockHeight()
-		if err != nil {
-			return vInfo, err
-		}
-	}
-
 	// Calculating uptime
 	// Total blocks is more accurate as `cosmologger` might miss some blocks under some cirscumstance
-	totalLoggedBlocks, err := blocks.GetTotalBlocks()
+	latestBlockHeight, err := blocks.GetLatestBlockHeight()
 	if err != nil {
-		return vInfo, err
+		return ValidatorInfo{}, err
 	}
-	expectedSignedBlocks := totalLoggedBlocks - vInfo.FirstSignedBlockHeight
-	if expectedSignedBlocks == 0 {
-		vInfo.UpTime = 0
-	} else {
-		vInfo.UpTime = float32(vInfo.TotalSignedBlocks) / float32(expectedSignedBlocks)
-	}
-	vInfo.UpTimeAll = float32(vInfo.TotalSignedBlocks) / float32(totalLoggedBlocks)
-
-	return vInfo, nil
+	return v.GetValidatorInfoByBlockHeightRange(1, latestBlockHeight)
 
 }
 
@@ -117,12 +86,14 @@ func (v *ValidatorRecord) GetValidatorInfoByBlockHeightRange(beginHeight, endHei
 
 	// Calculating uptime
 	totalBlocks := endHeight - beginHeight
-	if totalBlocks == 0 {
+
+	expectedSignedBlocks := totalBlocks - vInfo.FirstSignedBlockHeight
+	if expectedSignedBlocks == 0 {
 		vInfo.UpTime = 0
 	} else {
-		vInfo.UpTime = float32(vInfo.TotalSignedBlocks) / float32(totalBlocks)
+		vInfo.UpTime = float32(vInfo.TotalSignedBlocks) / float32(expectedSignedBlocks)
 	}
-	vInfo.UpTimeAll = 0
+	vInfo.UpTimeAll = float32(vInfo.TotalSignedBlocks) / float32(totalBlocks)
 
 	return vInfo, nil
 
@@ -240,7 +211,10 @@ func GetAllValidatorsWithInfoByBlockHeightRange(beginHeight, endHeight uint64) (
 	}
 	for i := range listOfValidators {
 
+		// fmt.Printf("Validator #%5d \tMoniker: `%50s` ...\t", i, listOfValidators[i].Moniker)
 		valInfo, err := listOfValidators[i].GetValidatorInfoByBlockHeightRange(beginHeight, endHeight)
+		// fmt.Printf("Done\n")
+
 		if err != nil {
 			return valInfoList, err
 		}
@@ -256,23 +230,10 @@ func GetAllValidatorsWithInfoByBlockHeightRange(beginHeight, endHeight uint64) (
 
 func GetAllValidatorsWithInfo() ([]ValidatorInfo, error) {
 
-	var valInfoList []ValidatorInfo
-	listOfValidators, err := GetAllValidators()
+	latestBlockHeight, err := blocks.GetLatestBlockHeight()
 	if err != nil {
-		return nil, err
-	}
-	for i := range listOfValidators {
-
-		valInfo, err := listOfValidators[i].GetValidatorInfo()
-		if err != nil {
-			return valInfoList, err
-		}
-		valInfoList = append(valInfoList, valInfo)
+		return []ValidatorInfo{}, err
 	}
 
-	sort.Slice(valInfoList, func(i, j int) bool {
-		return valInfoList[i].UpTime > valInfoList[j].UpTime
-	})
-
-	return valInfoList, nil
+	return GetAllValidatorsWithInfoByBlockHeightRange(1, latestBlockHeight)
 }

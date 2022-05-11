@@ -17,3 +17,4 @@ vendor/
 valuter
 __debug_bin
 my_keys/
+tmp/
