@@ -1,6 +1,8 @@
 package tasks
 
 import (
+	"sort"
+
 	"github.com/archway-network/valuter/configs"
 	"github.com/archway-network/valuter/participants"
 	"github.com/archway-network/valuter/validators"
@@ -98,25 +100,9 @@ func GetValidatorsSortedByUpTimeInBlockHeightRange(beginHeight, endHeight uint64
 		listOfValidatorsInfo = append(listOfValidatorsInfo, vInfo)
 	}
 
-	// Sorting based on uptime
-	// Note: since this is not a performance critical,
-	// we implemented a simple bubble sort
-	for j := 0; j < len(listOfValidatorsInfo); j++ {
-		modified := false
-		for i := 0; i < len(listOfValidatorsInfo)-1; i++ {
-			if listOfValidatorsInfo[i].UpTime < listOfValidatorsInfo[i+1].UpTime {
-				// swap
-				tmp := listOfValidatorsInfo[i]
-				listOfValidatorsInfo[i] = listOfValidatorsInfo[i+1]
-				listOfValidatorsInfo[i+1] = tmp
-				modified = true
-			}
-		}
-		// Already sorted, just for having a bit better performance
-		if !modified {
-			break
-		}
-	}
+	sort.Slice(listOfValidatorsInfo, func(i, j int) bool {
+		return listOfValidatorsInfo[i].UpTime > listOfValidatorsInfo[j].UpTime
+	})
 
 	return listOfValidatorsInfo, nil
 }

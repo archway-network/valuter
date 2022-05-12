@@ -7,6 +7,7 @@ import (
 	"github.com/archway-network/cosmologger/database"
 	cosmoLogTx "github.com/archway-network/cosmologger/tx"
 	"github.com/archway-network/valuter/blocks"
+	"github.com/archway-network/valuter/progressbar"
 	"github.com/archway-network/valuter/tools"
 	"github.com/archway-network/valuter/tx"
 	"github.com/archway-network/valuter/types"
@@ -85,7 +86,7 @@ func (v *ValidatorRecord) GetValidatorInfoByBlockHeightRange(beginHeight, endHei
 	}
 
 	// Calculating uptime
-	totalBlocks := endHeight - beginHeight
+	totalBlocks := endHeight - beginHeight + 1 // inclusive
 
 	expectedSignedBlocks := totalBlocks - vInfo.FirstSignedBlockHeight
 	if expectedSignedBlocks == 0 {
@@ -209,10 +210,19 @@ func GetAllValidatorsWithInfoByBlockHeightRange(beginHeight, endHeight uint64) (
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Printf("\nProcessing Validators data...\n")
+
+	var bar progressbar.Bar
+	bar.NewOption(0, int64(len(listOfValidators)))
+	bar.Play(0)
+	defer bar.Finish()
+
 	for i := range listOfValidators {
 
 		// fmt.Printf("Validator #%5d \tMoniker: `%50s` ...\t", i, listOfValidators[i].Moniker)
 		valInfo, err := listOfValidators[i].GetValidatorInfoByBlockHeightRange(beginHeight, endHeight)
+		bar.Play(int64(i))
 		// fmt.Printf("Done\n")
 
 		if err != nil {
