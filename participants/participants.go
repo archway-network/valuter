@@ -13,6 +13,7 @@ import (
 
 type ParticipantRecord struct {
 	agSigner.ID
+	Country      string
 	KycSessionId string
 	KycVerified  bool
 }
@@ -20,7 +21,7 @@ type ParticipantRecord struct {
 // This function receives a json string of the signed ID,
 // verifies it with the given signature and if it passes,
 // the data will be added to the database
-func Import(jsonStr string) error {
+func ImportBySignature(jsonStr string) error {
 
 	container, err := getAgSignerContainer(jsonStr)
 	if err != nil {
@@ -54,15 +55,16 @@ func AddNew(participant ParticipantRecord) error {
 	//Check if the record is already in the db
 	queryRes, err := database.DB.Load(database.TABLE_PARTICIPANTS,
 		database.RowType{
-			database.FIELD_PARTICIPANTS_ACCOUNT_ADDRESS: participant.AccountAddress,
+			database.FIELD_PARTICIPANTS_EMAIL_ADDRESS: participant.EmailAddress,
 		})
 	if err != nil {
 		return err
 	}
 
-	// Already exist //TODO: We might want to update the record if it exist, need to decide on that
+	// Already exist, let's update it, a user might correct their signature in the next submissions
 	if len(queryRes) > 0 {
-		return nil
+		_, err := participant.Update()
+		return err
 	}
 	_, err = database.DB.Insert(database.TABLE_PARTICIPANTS, participant.getDBRow())
 	return err
@@ -74,6 +76,13 @@ func getAgSignerContainer(jsonStr string) (*agSigner.Container, error) {
 	if jsonStr == "" {
 		return nil, nil
 	}
+
+	// Let's fix those who copied it wrongly
+	if jsonStr[0] != '{' {
+		jsonStr = "{" + jsonStr + "}"
+	}
+
+	// fmt.Printf("\n\n========================\n\njsonStr: %v\n\n\n", jsonStr)
 
 	var container agSigner.Container
 	err := json.Unmarshal([]byte(jsonStr), &container)
@@ -172,4 +181,51 @@ func (p *ParticipantRecord) UpdateKYC() (int, error) {
 		},
 	)
 	return int(uRes.RowsAffected), err
+}
+
+// Returns RowsAffected, error
+func (p *ParticipantRecord) Update() (int, error) {
+
+	if p.EmailAddress == "" {
+		return 0, fmt.Errorf("email address cannot be empty")
+	}
+
+	uRes, err := database.DB.Update(
+		database.TABLE_PARTICIPANTS,
+		p.getDBRow(), // Fields to update
+		database.RowType{ // Conditions
+			database.FIELD_PARTICIPANTS_EMAIL_ADDRESS: p.EmailAddress,
+		},
+	)
+	return int(uRes.RowsAffected), err
+}
+
+func ImportByEmail(email string, fullName string, country string) error {
+
+	p, err := GetParticipantByEmail(email)
+	if err != nil {
+		return err
+	}
+
+	if p.EmailAddress == "" { // Not found in the DB
+		return AddNew(ParticipantRecord{
+			ID: agSigner.ID{
+				EmailAddress:  email,
+				FullLegalName: fullName,
+			},
+			Country: country,
+		})
+	}
+
+	// Let's update the found record
+
+	if p.FullLegalName == "" {
+		p.FullLegalName = fullName
+	}
+	if p.Country == "" {
+		p.Country = country
+	}
+
+	_, err = p.Update()
+	return err
 }

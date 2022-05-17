@@ -19,12 +19,13 @@ replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
 
 require (
 	github.com/archway-network/augusta-testnet-signer v0.0.0-20220205125505-210977b7663d
-	github.com/archway-network/cosmologger v0.0.0-20220511085142-170458ac0386
 	github.com/archway-network/synaps-verifier v0.0.0-20220303180211-0dde72120850
 	github.com/cosmos/cosmos-sdk v0.45.1
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/spf13/cobra v1.3.0
 )
+
+require github.com/archway-network/cosmologger v0.0.0-20220513162015-9fd1bb203162
 
 require (
 	filippo.io/edwards25519 v1.0.0-beta.2 // indirect
@@ -74,7 +75,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/keybase/go-keychain v0.0.0-20190712205309-48d3d31d256d // indirect
-	github.com/lib/pq v1.10.4 // indirect
+	github.com/lib/pq v1.10.5 // indirect
 	github.com/libp2p/go-buffer-pool v0.0.2 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

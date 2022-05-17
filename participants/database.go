@@ -28,6 +28,7 @@ func DBRowToParticipantRecord(row database.RowType) ParticipantRecord {
 		},
 		KycSessionId: row[database.FIELD_PARTICIPANTS_KYC_SESSION_ID].(string),
 		KycVerified:  row[database.FIELD_PARTICIPANTS_KYC_VERIFIED].(bool),
+		Country:      row[database.FIELD_PARTICIPANTS_COUNTRY].(string),
 	}
 }
 
@@ -44,10 +45,11 @@ func DBRowToParticipantRecords(row []database.RowType) []ParticipantRecord {
 func (p ParticipantRecord) getDBRow() database.RowType {
 	return database.RowType{
 
-		database.FIELD_PARTICIPANTS_ACCOUNT_ADDRESS: p.AccountAddress,
-		database.FIELD_PARTICIPANTS_FULL_LEGAL_NAME: p.FullLegalName,
-		database.FIELD_PARTICIPANTS_GITHUB_HANDLE:   p.GithubHandle,
 		database.FIELD_PARTICIPANTS_EMAIL_ADDRESS:   p.EmailAddress,
+		database.FIELD_PARTICIPANTS_FULL_LEGAL_NAME: p.FullLegalName,
+		database.FIELD_PARTICIPANTS_COUNTRY:         p.Country,
+		database.FIELD_PARTICIPANTS_ACCOUNT_ADDRESS: p.AccountAddress,
+		database.FIELD_PARTICIPANTS_GITHUB_HANDLE:   p.GithubHandle,
 		database.FIELD_PARTICIPANTS_PUBKEY:          p.PubKey,
 		database.FIELD_PARTICIPANTS_KYC_SESSION_ID:  p.KycSessionId,
 		database.FIELD_PARTICIPANTS_KYC_VERIFIED:    p.KycVerified,
