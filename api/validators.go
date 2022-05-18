@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/archway-network/valuter/blocksigners"
+	"github.com/archway-network/valuter/participants"
 	"github.com/archway-network/valuter/tasks"
 	"github.com/archway-network/valuter/tools"
 	"github.com/archway-network/valuter/validators"
@@ -54,7 +55,22 @@ func GetValidators(resp http.ResponseWriter, req *http.Request, params routing.P
 		return
 	}
 
-	tools.SendJSON(resp, valInfos)
+	type ValOutput struct {
+		validators.ValidatorInfo
+		participants.ParticipantRecord
+	}
+
+	var output []ValOutput
+	for i := range valInfos {
+		pRec, _ := participants.GetParticipantByAddress(valInfos[i].AccAddr)
+		output = append(output,
+			ValOutput{
+				ValidatorInfo:     valInfos[i],
+				ParticipantRecord: pRec,
+			})
+	}
+
+	tools.SendJSON(resp, output)
 
 	// limitOffset := tools.GetLimitOffsetFromHttpReq(req)
 	// validators, pagination, err := validators.GetValidatorsWithPagination(limitOffset)
