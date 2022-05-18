@@ -88,7 +88,7 @@ func (v *ValidatorRecord) GetValidatorInfoByBlockHeightRange(beginHeight, endHei
 	// Calculating uptime
 	totalBlocks := endHeight - beginHeight + 1 // inclusive
 
-	expectedSignedBlocks := totalBlocks - vInfo.FirstSignedBlockHeight
+	expectedSignedBlocks := totalBlocks - vInfo.FirstSignedBlockHeight + 1 // inclusive
 	if expectedSignedBlocks == 0 {
 		vInfo.UpTime = 0
 	} else {
