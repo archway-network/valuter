@@ -5,6 +5,7 @@ import (
 
 	"github.com/archway-network/cosmologger/database"
 	"github.com/archway-network/valuter/blocks"
+	"github.com/archway-network/valuter/simplecache"
 )
 
 func (v *ValidatorRecord) GetFirstSignedBlockHeight() (uint64, error) {
@@ -28,8 +29,17 @@ func (v *ValidatorRecord) GetFirstSignedBlockHeightWithBegin(beginHeight uint64)
 		database.FIELD_BLOCK_SIGNERS_VAL_CONS_ADDR,
 		database.FIELD_BLOCK_SIGNERS_BLOCK_HEIGHT,
 	)
+	// fmt.Printf("\nSQL: %s\nParams: %#v\n\n", SQL, database.QueryParams{v.ConsAddr, beginHeight})
 
-	rows, err := database.DB.Query(SQL, database.QueryParams{v.ConsAddr, beginHeight})
+	params := database.QueryParams{v.ConsAddr, beginHeight}
+
+	cacheKey := fmt.Sprintf("%s_%v", SQL, params)
+	output, err := simplecache.ReadUint64(cacheKey)
+	if err == nil {
+		return output, err
+	}
+
+	rows, err := database.DB.Query(SQL, params)
 	if err != nil {
 		return 0, err
 	}
@@ -39,7 +49,10 @@ func (v *ValidatorRecord) GetFirstSignedBlockHeightWithBegin(beginHeight uint64)
 		return 0, nil
 	}
 
-	return uint64(rows[0]["result"].(int64)), nil
+	output = uint64(rows[0]["result"].(int64))
+	simplecache.StoreUint64(cacheKey, output)
+
+	return output, nil
 }
 
 func (v *ValidatorRecord) GetLatestSignedBlockHeight() (uint64, error) {
@@ -66,8 +79,15 @@ func (v *ValidatorRecord) GetLatestSignedBlockHeightWithEnd(endHeight uint64) (u
 		database.FIELD_BLOCK_SIGNERS_VAL_CONS_ADDR,
 		database.FIELD_BLOCK_SIGNERS_BLOCK_HEIGHT,
 	)
+	params := database.QueryParams{v.ConsAddr, endHeight}
 
-	rows, err := database.DB.Query(SQL, database.QueryParams{v.ConsAddr, endHeight})
+	cacheKey := fmt.Sprintf("%s_%v", SQL, params)
+	output, err := simplecache.ReadUint64(cacheKey)
+	if err == nil {
+		return output, err
+	}
+
+	rows, err := database.DB.Query(SQL, params)
 	if err != nil {
 		return 0, err
 	}
@@ -77,7 +97,10 @@ func (v *ValidatorRecord) GetLatestSignedBlockHeightWithEnd(endHeight uint64) (u
 		return 0, nil
 	}
 
-	return uint64(rows[0]["result"].(int64)), nil
+	output = uint64(rows[0]["result"].(int64))
+	simplecache.StoreUint64(cacheKey, output)
+
+	return output, nil
 }
 
 func (v *ValidatorRecord) GetTotalSignedBlocks() (uint64, error) {
@@ -90,8 +113,15 @@ func (v *ValidatorRecord) GetTotalSignedBlocks() (uint64, error) {
 		database.TABLE_BLOCK_SIGNERS,
 		database.FIELD_BLOCK_SIGNERS_VAL_CONS_ADDR,
 	)
+	params := database.QueryParams{v.ConsAddr}
 
-	rows, err := database.DB.Query(SQL, database.QueryParams{v.ConsAddr})
+	cacheKey := fmt.Sprintf("%s_%v", SQL, params)
+	output, err := simplecache.ReadUint64(cacheKey)
+	if err == nil {
+		return output, err
+	}
+
+	rows, err := database.DB.Query(SQL, params)
 	if err != nil {
 		return 0, err
 	}
@@ -100,8 +130,10 @@ func (v *ValidatorRecord) GetTotalSignedBlocks() (uint64, error) {
 		rows[0]["total"] == nil {
 		return 0, nil
 	}
+	output = uint64(rows[0]["total"].(int64))
+	simplecache.StoreUint64(cacheKey, output)
 
-	return uint64(rows[0]["total"].(int64)), nil
+	return output, nil
 }
 
 func (v *ValidatorRecord) GetTotalSignedBlocksWithHeightRange(beginHeight, endHeight uint64) (uint64, error) {
@@ -117,8 +149,15 @@ func (v *ValidatorRecord) GetTotalSignedBlocksWithHeightRange(beginHeight, endHe
 		database.FIELD_BLOCK_SIGNERS_VAL_CONS_ADDR,
 		database.FIELD_BLOCK_SIGNERS_BLOCK_HEIGHT,
 	)
+	params := database.QueryParams{v.ConsAddr, beginHeight, endHeight}
 
-	rows, err := database.DB.Query(SQL, database.QueryParams{v.ConsAddr, beginHeight, endHeight})
+	cacheKey := fmt.Sprintf("%s_%v", SQL, params)
+	output, err := simplecache.ReadUint64(cacheKey)
+	if err == nil {
+		return output, err
+	}
+
+	rows, err := database.DB.Query(SQL, params)
 	if err != nil {
 		return 0, err
 	}
@@ -127,6 +166,8 @@ func (v *ValidatorRecord) GetTotalSignedBlocksWithHeightRange(beginHeight, endHe
 		rows[0]["total"] == nil {
 		return 0, nil
 	}
+	output = uint64(rows[0]["total"].(int64))
+	simplecache.StoreUint64(cacheKey, output)
 
-	return uint64(rows[0]["total"].(int64)), nil
+	return output, nil
 }
