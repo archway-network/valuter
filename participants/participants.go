@@ -63,7 +63,7 @@ func AddNew(participant ParticipantRecord) error {
 
 	// Already exist, let's update it, a user might correct their signature in the next submissions
 	if len(queryRes) > 0 {
-		_, err := participant.Update()
+		// _, err := participant.Update() // In some cases, it eliminated the keys, so let's forget it for the moment
 		return err
 	}
 	_, err = database.DB.Insert(database.TABLE_PARTICIPANTS, participant.getDBRow())
@@ -72,17 +72,20 @@ func AddNew(participant ParticipantRecord) error {
 
 func getAgSignerContainer(jsonStr string) (*agSigner.Container, error) {
 
-	jsonStr = strings.Trim(jsonStr, "\"\n\t\r' ")
+	jsonStr = strings.Trim(jsonStr, "\n\t\r' -")
 	if jsonStr == "" {
 		return nil, nil
 	}
+
+	// refine the string
+	jsonStr = strings.ReplaceAll(jsonStr, `""`, `"`)
 
 	// Let's fix those who copied it wrongly
 	if jsonStr[0] != '{' {
 		jsonStr = "{" + jsonStr + "}"
 	}
 
-	// fmt.Printf("\n\n========================\n\njsonStr: %v\n\n\n", jsonStr)
+	// fmt.Printf("\n\n========================\n\njsonStr: `%v`\n\n\n", jsonStr)
 
 	var container agSigner.Container
 	err := json.Unmarshal([]byte(jsonStr), &container)
