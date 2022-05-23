@@ -88,7 +88,7 @@ var importGFormCSV = &cobra.Command{
 
 				err := participants.ImportBySignature(rec[jsonCols[i]])
 				if err != nil {
-					fmt.Printf("\n====> Error on importing: %s \n%v\n", err, rec[jsonCols[i]])
+					fmt.Printf("\n====> Error on importing by Signature: %s \n%v\n", err, rec[jsonCols[i]])
 				}
 				fmt.Printf("\r\tProcessing record %5d", rowCounter)
 			}
@@ -122,7 +122,7 @@ var importGFormCSV = &cobra.Command{
 
 			err = participants.ImportByEmail(emailAddr, fullName, country)
 			if err != nil {
-				fmt.Printf("\n====> Error on importing: %s \n%v\n", err, emailAddr)
+				fmt.Printf("\n====> Error on importing by Email: %s \n%v\n", err, emailAddr)
 			}
 			fmt.Printf("\r\tProcessing record %5d", rowCounter)
 		}
