@@ -60,6 +60,28 @@ type Configuration struct {
 			} `json:"conditions"` // Uptime Conditions
 
 		} `json:"uptime"`
+
+		ContractsMaxRewards struct {
+			MaxWinners int    `json:"max-winners"` // Max number of winners for this tasks
+			Reward     uint64 `json:"reward"`      // Reward for each winner
+
+			// There might be multiple load bursts
+			Condition struct {
+				StartHight uint64 `json:"start-hight"`
+				EndHight   uint64 `json:"end-hight"`
+			} `json:"condition"`
+		} `json:"contracts-max-rewards"`
+
+		ContractsSubsidizeUsersFees struct {
+			MaxWinners int    `json:"max-winners"` // Max number of winners for this tasks
+			Reward     uint64 `json:"reward"`      // Reward for each winner
+
+			// There might be multiple load bursts
+			Condition struct {
+				StartHight uint64 `json:"start-hight"`
+				EndHight   uint64 `json:"end-hight"`
+			} `json:"condition"`
+		} `json:"contracts-subsidize-users-fees"`
 	} `json:"tasks"`
 
 	Bech32Prefix struct {

@@ -31,6 +31,8 @@ func setupRouter() *routing.Router {
 	router.GET("/challenges/jail-unjail", GetUnjailedValidatorsWinners)
 	router.GET("/challenges/uptime", GetPerformanceTestWinners)
 	router.GET("/challenges/uptime/:burst_index", GetPerformanceTestWinnersPerLoadBurst)
+	router.GET("/challenges/contracts/max-net-rewards", GetMaxNetworkRewardsWinners)
+	router.GET("/challenges/contracts/subsidize-users-fees", GetContractsSubsidizeUsersFeesWinners)
 
 	router.GET("/participants", GetParticipants)
 	router.GET("/participants/:address", GetParticipant)
