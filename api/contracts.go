@@ -41,7 +41,7 @@ func GetMaxNetworkRewardsWinners(resp http.ResponseWriter, req *http.Request, pa
 		pRec, _ := participants.GetParticipantByAddress(contractsList[i].DeveloperAddress)
 
 		// Some participant might use their main account address as the reward address instead of developer address
-		if pRec.AccountAddress == "" {
+		if pRec.AccountAddress == "" && contractsList[i].DeveloperAddress != contractsList[i].RewardAddress {
 			pRec, _ = participants.GetParticipantByAddress(contractsList[i].RewardAddress)
 		}
 		contractsList[i].MetadataJson = ""
@@ -85,7 +85,7 @@ func GetContractsSubsidizeUsersFeesWinners(resp http.ResponseWriter, req *http.R
 		pRec, _ := participants.GetParticipantByAddress(contractsList[i].DeveloperAddress)
 
 		// Some participant might use their main account address as the reward address instead of developer address
-		if pRec.AccountAddress == "" {
+		if pRec.AccountAddress == "" && contractsList[i].DeveloperAddress != contractsList[i].RewardAddress {
 			pRec, _ = participants.GetParticipantByAddress(contractsList[i].RewardAddress)
 		}
 		contractsList[i].MetadataJson = ""
